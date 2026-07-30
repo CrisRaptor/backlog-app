@@ -1,0 +1,183 @@
+/* #region 1. Estilos Base y Layout Principal */
+body {
+    background-color: #121214 !important;
+    color: #ffffff !important;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Limitar contenedor al 80% y centrar */
+#app-content {
+    width: 80%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+/* #endregion */
+
+/* #region 2. Marca y Cabecera (Header) */
+.brand-title {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.brand-title:hover {
+    color: #0d6efd;
+}
+/* #endregion */
+
+/* #region 3. Vista - Inicio (Dashboard y Tarjetas) */
+.home-cards-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+@media (min-width: 1200px) {
+    .home-cards-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* Anular fondo blanco de Bootstrap en Hover */
+.home-card.btn-outline-light:hover,
+.home-card.btn-outline-light:focus {
+    background-color: #1a1a1e !important;
+    color: #ffffff !important;
+    border-color: #52525b !important;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Contenedor del SVG */
+.card-icon-box {
+    width: 120px;
+    height: 120px;
+    margin: 0.5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-icon-box svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Badges de número */
+.badge-dark-subtle {
+    background-color: #0d0d0f;
+    border: 1px solid #2d2d32;
+    padding: 0.4em 0.8em;
+    font-size: 1.1rem !important;
+}
+
+/* Subtítulos */
+.home-card p {
+    font-size: 0.95rem !important;
+}
+
+.card-dark {
+    background-color: #1a1a1e;
+    border: 1px solid #2d2d32;
+    border-radius: 6px;
+    color: #ffffff;
+}
+
+.card-dark:hover {
+    border-color: #3f3f46;
+}
+/* #endregion */
+
+/* #region 4. Vista - Editar Elementos (Utilidades CRUD) */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Transición suave para el panel de edición */
+#edit-form-panel {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Botones en forma de tags para la lista del CRUD */
+.btn-edit-grid {
+    border: 1px solid;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.btn-edit-grid:hover {
+    background-color: #25252a !important;
+    border-color: #0d6efd !important;
+}
+
+/* Ajuste de altura para contenedor vacío de categorías */
+.min-h-30 {
+    min-height: 30px;
+}
+/* #endregion */
+
+/* #region 5. Vista - Mostrar Backlog (Filtros, Badges y Estados) */
+.border-subtle-custom {
+    border-color: #2d2d32 !important;
+}
+
+.badge-category {
+    background-color: #25252a;
+    color: #a1a1aa;
+    border: 1px solid #3f3f46;
+    font-size: 0.7rem;
+}
+
+/* Botones de Filtro */
+.btn-category-filter {
+    background-color: #1a1a1e;
+    color: #a1a1aa;
+    border: 1px solid #3f3f46;
+    transition: all 0.15s ease-in-out;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.8rem;
+}
+
+.btn-category-filter:hover {
+    color: #ffffff;
+    border-color: #52525b;
+}
+
+.btn-category-filter.active {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    border-color: #0d6efd !important;
+}
+
+/* Bordes indicativos por Estado */
+.card-status-pending {
+    border-left: 3px solid #0d6efd !important;
+}
+
+.card-status-inactive {
+    border-left: 3px solid #dc3545 !important;
+}
+
+.card-status-complete {
+    border-left: 3px solid #198754 !important;
+}
+
+/* Encabezados replegables */
+.status-header-btn {
+    text-decoration: none;
+    color: #ffffff;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 0.25rem 0;
+}
+
+.status-header-btn:focus {
+    box-shadow: none;
+}
+/* #endregion */

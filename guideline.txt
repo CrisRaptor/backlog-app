@@ -1,0 +1,59 @@
+/*
+================================================================================
+  BACKLOGGER - DOCUMENTACIÓN Y ESPECIFICACIONES TÉCNICAS
+================================================================================
+  Interfaz: SPA (Single Page Application) en un único HTML
+  Estilos: Bootstrap 5 (Minimalista, simple y moderno)
+  Paleta Base: Dark Theme (#121214 / #ffffff)
+
+--------------------------------------------------------------------------------
+  1. ESTRUCTURA DE ARCHIVOS Y RUTAS
+--------------------------------------------------------------------------------
+  - / (Raíz)          -> backlog.json (Juegos/libros principales)
+  - /quests/         -> [quest_id].json (Archivos de misiones activas y guardadas)
+  - /history/        -> history.json (Histórico general de elecciones y métricas)
+  - /oldbackups/     -> [YYYY-MM-DD]_backup.json (Backups automáticos diarios)
+
+--------------------------------------------------------------------------------
+  2. ESQUEMA DEL JSON DE ELEMENTOS (Atributos requeridos)
+--------------------------------------------------------------------------------
+  {
+    "name": "Elden Ring",
+    "img_name": "elden_ring.jpg",
+    "categories": ["focus", "platino"],
+    "status": "pending", // p.ej: 'pending', 'completed', 'dropped'
+    "mandatory": true
+  }
+
+--------------------------------------------------------------------------------
+  3. ARQUITECTURA DE LA INTERFAZ Y NAVEGACIÓN (SPA)
+--------------------------------------------------------------------------------
+  - Branding: Título "Backlogger" en la esquina superior izquierda (Header/Navbar).
+    * Click en "Backlogger" -> Redirige/Muestra la vista "Inicio".
+
+  - VISTA "INICIO" (Dashboard principal con botones de acceso rápido):
+    [1] Quests             -> Visualizar la quest activa + Histórico de quests anteriores.
+    [2] Start new quest    -> Generador de misiones (Content Roll paso a paso):
+                              a. Ajuste de la pool de X días.
+                              b. Selección de categorías disponibles en los datos.
+                              c. Filtro opcional para incluir obligatorios (mandatory).
+                              d. Generación: Elección de 1-X ítems por categoría y día.
+                              e. Guardar resultado en /quests/ y registro en /history/.
+                              f. Renderizado del "Tracker" diario con checkboxes por tarea.
+    [3] Editar elementos   -> Formulario CRUD (Añadir, borrar, modificar backlog).
+    [4] Mostrar backlog    -> Vista general del inventario de juegos/libros.
+    [5] Configuración      -> Opciones generales + Módulo de ajuste de "Burnout" (cooldowns/desgaste).
+
+--------------------------------------------------------------------------------
+  4. LÓGICA DE BACKUPS Y MANTENIMIENTO
+--------------------------------------------------------------------------------
+  - Al iniciar la aplicación:
+    1. Verifica si existe backup del día anterior en la raíz.
+    2. Si no existe, genera la copia del backlog actual.
+    3. Mueve los backups que no correspondan al día de ayer a la carpeta 'oldbackups'.
+================================================================================
+*/
+
+/* Posibles implementaciones futuras 
+NO TENER EN CUENTA DURANTE EL DESARROLLO EXCEPTO MENCIÓN DIRECTA
+*/
