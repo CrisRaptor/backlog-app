@@ -1,0 +1,106 @@
+[
+  {
+    "name": "Elden Ring",
+    "img_name": "elden_ring.jpg",
+    "categories": [
+      "focus",
+      "platino"
+    ],
+    "status": "complete",
+    "mandatory": true
+  },
+  {
+    "name": "The Witcher 3: Wild Hunt",
+    "img_name": "witcher3.jpg",
+    "categories": [
+      "focus",
+      "historia"
+    ],
+    "status": "pending",
+    "mandatory": true
+  },
+  {
+    "name": "Hollow Knight",
+    "img_name": "hollow_knight.jpg",
+    "categories": [
+      "focus",
+      "platino",
+      "indie"
+    ],
+    "status": "pending",
+    "mandatory": false
+  },
+  {
+    "name": "Stardew Valley",
+    "img_name": "stardew_valley.jpg",
+    "categories": [
+      "casual",
+      "indie",
+      "grindeo"
+    ],
+    "status": "pending",
+    "mandatory": false
+  },
+  {
+    "name": "Hades",
+    "img_name": "hades.jpg",
+    "categories": [
+      "casual",
+      "roguelike",
+      "indie"
+    ],
+    "status": "pending",
+    "mandatory": false
+  },
+  {
+    "name": "Cyberpunk 2077",
+    "img_name": "cyberpunk2077.jpg",
+    "categories": [
+      "focus",
+      "historia"
+    ],
+    "status": "pending",
+    "mandatory": false
+  },
+  {
+    "name": "Monster Hunter: World",
+    "img_name": "mhworld.jpg",
+    "categories": [
+      "grindeo",
+      "multiplayer"
+    ],
+    "status": "pending",
+    "mandatory": false
+  },
+  {
+    "name": "Celeste",
+    "img_name": "celeste.jpg",
+    "categories": [
+      "casual",
+      "indie",
+      "platino"
+    ],
+    "status": "pending",
+    "mandatory": false
+  },
+  {
+    "name": "Persona 5 Royal",
+    "img_name": "p5r.jpg",
+    "categories": [
+      "focus",
+      "historia"
+    ],
+    "status": "pending",
+    "mandatory": true
+  },
+  {
+    "name": "Vampire Survivors",
+    "img_name": "vampire_survivors.jpg",
+    "categories": [
+      "casual",
+      "grindeo"
+    ],
+    "status": "pending",
+    "mandatory": false
+  }
+]
