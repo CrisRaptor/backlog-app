@@ -25,7 +25,8 @@
     "categories": [
       "focus",
       "platino",
-      "indie"
+      "indie",
+      "historia"
     ],
     "status": "pending",
     "mandatory": false
@@ -48,16 +49,6 @@
       "casual",
       "roguelike",
       "indie"
-    ],
-    "status": "pending",
-    "mandatory": false
-  },
-  {
-    "name": "Cyberpunk 2077",
-    "img_name": "cyberpunk2077.jpg",
-    "categories": [
-      "focus",
-      "historia"
     ],
     "status": "pending",
     "mandatory": false
