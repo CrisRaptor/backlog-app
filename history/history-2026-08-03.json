@@ -28,7 +28,7 @@
         "focus": 1,
         "grindeo": 1,
         "historia": "any",
-        "indie": "any",
+        "indie": 0,
         "multiplayer": "any",
         "platino": "any",
         "roguelike": "any"
@@ -96,12 +96,12 @@
           "completed": false
         },
         {
-          "name": "The Witcher 3: Wild Hunt",
+          "name": "Elden Ring",
           "category": "focus",
           "completed": false
         },
         {
-          "name": "Monster Hunter: World",
+          "name": "Stardew Valley",
           "category": "grindeo",
           "completed": false
         },
@@ -111,12 +111,17 @@
           "completed": false
         },
         {
+          "name": "The Witcher 3: Wild Hunt",
+          "category": "historia",
+          "completed": false
+        },
+        {
           "name": "Hades",
           "category": "indie",
           "completed": false
         },
         {
-          "name": "Stardew Valley",
+          "name": "Hollow Knight",
           "category": "indie",
           "completed": false
         },
@@ -126,12 +131,7 @@
           "completed": false
         },
         {
-          "name": "Elden Ring",
-          "category": "platino",
-          "completed": false
-        },
-        {
-          "name": "Hollow Knight",
+          "name": "Celeste",
           "category": "platino",
           "completed": false
         },
@@ -147,17 +147,17 @@
       "label": "Día 2 (Martes)",
       "tasks": [
         {
-          "name": "Hades",
+          "name": "Celeste",
           "category": "casual",
           "completed": false
         },
         {
-          "name": "Persona 5 Royal",
+          "name": "Hollow Knight",
           "category": "focus",
           "completed": false
         },
         {
-          "name": "Stardew Valley",
+          "name": "Vampire Survivors",
           "category": "grindeo",
           "completed": false
         },
@@ -172,27 +172,17 @@
           "completed": false
         },
         {
-          "name": "Stardew Valley",
-          "category": "indie",
-          "completed": false
-        },
-        {
-          "name": "Hollow Knight",
-          "category": "indie",
-          "completed": false
-        },
-        {
           "name": "Monster Hunter: World",
           "category": "multiplayer",
           "completed": false
         },
         {
-          "name": "Elden Ring",
+          "name": "Hollow Knight",
           "category": "platino",
           "completed": false
         },
         {
-          "name": "Hollow Knight",
+          "name": "Elden Ring",
           "category": "platino",
           "completed": false
         },
@@ -208,28 +198,23 @@
       "label": "Día 3 (Miércoles)",
       "tasks": [
         {
-          "name": "Stardew Valley",
+          "name": "Hades",
           "category": "casual",
           "completed": false
         },
         {
-          "name": "Hollow Knight",
+          "name": "The Witcher 3: Wild Hunt",
           "category": "focus",
           "completed": false
         },
         {
-          "name": "Stardew Valley",
+          "name": "Monster Hunter: World",
           "category": "grindeo",
           "completed": false
         },
         {
           "name": "Persona 5 Royal",
           "category": "historia",
-          "completed": false
-        },
-        {
-          "name": "Hollow Knight",
-          "category": "indie",
           "completed": false
         },
         {
@@ -243,7 +228,7 @@
           "completed": false
         },
         {
-          "name": "Celeste",
+          "name": "Hollow Knight",
           "category": "platino",
           "completed": false
         },
