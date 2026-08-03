@@ -1,6 +1,6 @@
 {
   "configuracion": {
-    "daysCount": 3,
+    "daysCount": 7,
     "useMandatory": true,
     "selectedCategories": [
       "casual",
@@ -17,73 +17,74 @@
         "casual": 1,
         "focus": 1,
         "grindeo": 1,
-        "historia": "any",
-        "indie": "any",
-        "multiplayer": "any",
-        "platino": "any",
-        "roguelike": "any"
+        "historia": 0,
+        "indie": 0,
+        "multiplayer": 0,
+        "platino": 0,
+        "roguelike": 0
       },
       "Día 2 (Martes)": {
         "casual": 1,
         "focus": 1,
         "grindeo": 1,
-        "historia": "any",
+        "historia": 0,
         "indie": 0,
-        "multiplayer": "any",
-        "platino": "any",
-        "roguelike": "any"
+        "multiplayer": 0,
+        "platino": 0,
+        "roguelike": 0
       },
       "Día 3 (Miércoles)": {
         "casual": 1,
         "focus": 1,
         "grindeo": 1,
-        "historia": "any",
-        "indie": "any",
-        "multiplayer": "any",
-        "platino": "any",
-        "roguelike": "any"
+        "historia": 0,
+        "indie": 0,
+        "multiplayer": 0,
+        "platino": 0,
+        "roguelike": 0
       },
       "Día 4 (Jueves)": {
-        "casual": "any",
-        "focus": "any",
-        "grindeo": "any",
-        "historia": "any",
-        "indie": "any",
-        "multiplayer": "any",
-        "platino": "any",
-        "roguelike": "any"
+        "casual": 1,
+        "focus": 1,
+        "grindeo": 1,
+        "historia": 0,
+        "indie": 0,
+        "multiplayer": 0,
+        "platino": 0,
+        "roguelike": 0
       },
       "Día 5 (Viernes)": {
-        "casual": "any",
-        "focus": "any",
-        "grindeo": "any",
-        "historia": "any",
-        "indie": "any",
-        "multiplayer": "any",
-        "platino": "any",
-        "roguelike": "any"
+        "casual": 1,
+        "focus": 1,
+        "grindeo": 1,
+        "historia": 0,
+        "indie": 0,
+        "multiplayer": 0,
+        "platino": 0,
+        "roguelike": 0
       },
       "Día 6 (Sábado)": {
-        "casual": "any",
-        "focus": "any",
-        "grindeo": "any",
-        "historia": "any",
-        "indie": "any",
-        "multiplayer": "any",
-        "platino": "any",
-        "roguelike": "any"
+        "casual": 1,
+        "focus": 1,
+        "grindeo": 1,
+        "historia": 0,
+        "indie": 0,
+        "multiplayer": 0,
+        "platino": 0,
+        "roguelike": 0
       },
       "Día 7 (Domingo)": {
-        "casual": "any",
-        "focus": "any",
-        "grindeo": "any",
-        "historia": "any",
-        "indie": "any",
-        "multiplayer": "any",
-        "platino": "any",
-        "roguelike": "any"
+        "casual": 1,
+        "focus": 1,
+        "grindeo": 1,
+        "historia": 0,
+        "indie": 0,
+        "multiplayer": 0,
+        "platino": 0,
+        "roguelike": 0
       }
-    }
+    },
+    "gamesPerDayValid": 1
   },
   "opciones": [
     {
@@ -91,48 +92,33 @@
       "label": "Día 1 (Lunes)",
       "tasks": [
         {
-          "name": "Celeste",
-          "category": "casual",
-          "completed": false
-        },
-        {
-          "name": "The Witcher 3: Wild Hunt",
-          "category": "focus",
-          "completed": false
-        },
-        {
-          "name": "Vampire Survivors",
-          "category": "grindeo",
-          "completed": false
-        },
-        {
-          "name": "Persona 5 Royal",
-          "category": "historia",
+          "name": "Hades",
+          "slotCategory": "casual",
+          "categories": [
+            "casual",
+            "roguelike",
+            "indie"
+          ],
           "completed": false
         },
         {
           "name": "Hollow Knight",
-          "category": "historia",
-          "completed": false
-        },
-        {
-          "name": "Hollow Knight",
-          "category": "indie",
+          "slotCategory": "focus",
+          "categories": [
+            "focus",
+            "platino",
+            "indie",
+            "historia"
+          ],
           "completed": false
         },
         {
           "name": "Monster Hunter: World",
-          "category": "multiplayer",
-          "completed": false
-        },
-        {
-          "name": "Elden Ring",
-          "category": "platino",
-          "completed": false
-        },
-        {
-          "name": "Hades",
-          "category": "roguelike",
+          "slotCategory": "grindeo",
+          "categories": [
+            "grindeo",
+            "multiplayer"
+          ],
           "completed": false
         }
       ]
@@ -143,47 +129,30 @@
       "tasks": [
         {
           "name": "Stardew Valley",
-          "category": "casual",
+          "slotCategory": "casual",
+          "categories": [
+            "casual",
+            "indie",
+            "grindeo"
+          ],
           "completed": false
         },
         {
-          "name": "The Witcher 3: Wild Hunt",
-          "category": "focus",
+          "name": "Elden Ring",
+          "slotCategory": "focus",
+          "categories": [
+            "focus",
+            "platino"
+          ],
           "completed": false
         },
         {
-          "name": "Monster Hunter: World",
-          "category": "grindeo",
-          "completed": false
-        },
-        {
-          "name": "Persona 5 Royal",
-          "category": "historia",
-          "completed": false
-        },
-        {
-          "name": "Hollow Knight",
-          "category": "historia",
-          "completed": false
-        },
-        {
-          "name": "Monster Hunter: World",
-          "category": "multiplayer",
-          "completed": false
-        },
-        {
-          "name": "Celeste",
-          "category": "platino",
-          "completed": false
-        },
-        {
-          "name": "Hollow Knight",
-          "category": "platino",
-          "completed": false
-        },
-        {
-          "name": "Hades",
-          "category": "roguelike",
+          "name": "Vampire Survivors",
+          "slotCategory": "grindeo",
+          "categories": [
+            "casual",
+            "grindeo"
+          ],
           "completed": false
         }
       ]
@@ -193,48 +162,170 @@
       "label": "Día 3 (Miércoles)",
       "tasks": [
         {
-          "name": "Celeste",
-          "category": "casual",
+          "name": "Hades",
+          "slotCategory": "casual",
+          "categories": [
+            "casual",
+            "roguelike",
+            "indie"
+          ],
           "completed": false
         },
         {
-          "name": "Hollow Knight",
-          "category": "focus",
-          "completed": false
-        },
-        {
-          "name": "Vampire Survivors",
-          "category": "grindeo",
-          "completed": false
-        },
-        {
-          "name": "Hollow Knight",
-          "category": "historia",
-          "completed": false
-        },
-        {
-          "name": "Persona 5 Royal",
-          "category": "historia",
-          "completed": false
-        },
-        {
-          "name": "Celeste",
-          "category": "indie",
+          "name": "The Witcher 3: Wild Hunt",
+          "slotCategory": "focus",
+          "categories": [
+            "focus",
+            "historia"
+          ],
           "completed": false
         },
         {
           "name": "Monster Hunter: World",
-          "category": "multiplayer",
+          "slotCategory": "grindeo",
+          "categories": [
+            "grindeo",
+            "multiplayer"
+          ],
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "label": "Día 4 (Jueves)",
+      "tasks": [
+        {
+          "name": "Hades",
+          "slotCategory": "casual",
+          "categories": [
+            "casual",
+            "roguelike",
+            "indie"
+          ],
+          "completed": false
+        },
+        {
+          "name": "Elden Ring",
+          "slotCategory": "focus",
+          "categories": [
+            "focus",
+            "platino"
+          ],
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "slotCategory": "grindeo",
+          "categories": [
+            "grindeo",
+            "multiplayer"
+          ],
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "label": "Día 5 (Viernes)",
+      "tasks": [
+        {
+          "name": "Vampire Survivors",
+          "slotCategory": "casual",
+          "categories": [
+            "casual",
+            "grindeo"
+          ],
           "completed": false
         },
         {
           "name": "Hollow Knight",
-          "category": "platino",
+          "slotCategory": "focus",
+          "categories": [
+            "focus",
+            "platino",
+            "indie",
+            "historia"
+          ],
           "completed": false
         },
         {
+          "name": "Stardew Valley",
+          "slotCategory": "grindeo",
+          "categories": [
+            "casual",
+            "indie",
+            "grindeo"
+          ],
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "label": "Día 6 (Sábado)",
+      "tasks": [
+        {
           "name": "Hades",
-          "category": "roguelike",
+          "slotCategory": "casual",
+          "categories": [
+            "casual",
+            "roguelike",
+            "indie"
+          ],
+          "completed": false
+        },
+        {
+          "name": "The Witcher 3: Wild Hunt",
+          "slotCategory": "focus",
+          "categories": [
+            "focus",
+            "historia"
+          ],
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "slotCategory": "grindeo",
+          "categories": [
+            "grindeo",
+            "multiplayer"
+          ],
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "label": "Día 7 (Domingo)",
+      "tasks": [
+        {
+          "name": "Hades",
+          "slotCategory": "casual",
+          "categories": [
+            "casual",
+            "roguelike",
+            "indie"
+          ],
+          "completed": false
+        },
+        {
+          "name": "Elden Ring",
+          "slotCategory": "focus",
+          "categories": [
+            "focus",
+            "platino"
+          ],
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "slotCategory": "grindeo",
+          "categories": [
+            "casual",
+            "indie",
+            "grindeo"
+          ],
           "completed": false
         }
       ]
