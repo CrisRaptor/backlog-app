@@ -91,33 +91,28 @@
       "label": "Día 1 (Lunes)",
       "tasks": [
         {
-          "name": "Stardew Valley",
+          "name": "Celeste",
           "category": "casual",
           "completed": false
         },
         {
-          "name": "Elden Ring",
+          "name": "The Witcher 3: Wild Hunt",
           "category": "focus",
           "completed": false
         },
         {
-          "name": "Stardew Valley",
+          "name": "Vampire Survivors",
           "category": "grindeo",
+          "completed": false
+        },
+        {
+          "name": "Persona 5 Royal",
+          "category": "historia",
           "completed": false
         },
         {
           "name": "Hollow Knight",
           "category": "historia",
-          "completed": false
-        },
-        {
-          "name": "The Witcher 3: Wild Hunt",
-          "category": "historia",
-          "completed": false
-        },
-        {
-          "name": "Hades",
-          "category": "indie",
           "completed": false
         },
         {
@@ -131,7 +126,7 @@
           "completed": false
         },
         {
-          "name": "Celeste",
+          "name": "Elden Ring",
           "category": "platino",
           "completed": false
         },
@@ -145,6 +140,57 @@
     {
       "day": 2,
       "label": "Día 2 (Martes)",
+      "tasks": [
+        {
+          "name": "Stardew Valley",
+          "category": "casual",
+          "completed": false
+        },
+        {
+          "name": "The Witcher 3: Wild Hunt",
+          "category": "focus",
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "category": "grindeo",
+          "completed": false
+        },
+        {
+          "name": "Persona 5 Royal",
+          "category": "historia",
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "category": "historia",
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "category": "multiplayer",
+          "completed": false
+        },
+        {
+          "name": "Celeste",
+          "category": "platino",
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "category": "platino",
+          "completed": false
+        },
+        {
+          "name": "Hades",
+          "category": "roguelike",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "label": "Día 3 (Miércoles)",
       "tasks": [
         {
           "name": "Celeste",
@@ -167,58 +213,12 @@
           "completed": false
         },
         {
-          "name": "The Witcher 3: Wild Hunt",
-          "category": "historia",
-          "completed": false
-        },
-        {
-          "name": "Monster Hunter: World",
-          "category": "multiplayer",
-          "completed": false
-        },
-        {
-          "name": "Hollow Knight",
-          "category": "platino",
-          "completed": false
-        },
-        {
-          "name": "Elden Ring",
-          "category": "platino",
-          "completed": false
-        },
-        {
-          "name": "Hades",
-          "category": "roguelike",
-          "completed": false
-        }
-      ]
-    },
-    {
-      "day": 3,
-      "label": "Día 3 (Miércoles)",
-      "tasks": [
-        {
-          "name": "Hades",
-          "category": "casual",
-          "completed": false
-        },
-        {
-          "name": "The Witcher 3: Wild Hunt",
-          "category": "focus",
-          "completed": false
-        },
-        {
-          "name": "Monster Hunter: World",
-          "category": "grindeo",
-          "completed": false
-        },
-        {
           "name": "Persona 5 Royal",
           "category": "historia",
           "completed": false
         },
         {
-          "name": "Stardew Valley",
+          "name": "Celeste",
           "category": "indie",
           "completed": false
         },
@@ -229,11 +229,6 @@
         },
         {
           "name": "Hollow Knight",
-          "category": "platino",
-          "completed": false
-        },
-        {
-          "name": "Elden Ring",
           "category": "platino",
           "completed": false
         },
