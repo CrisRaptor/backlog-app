@@ -1,0 +1,192 @@
+{
+  "quest_id": "quest_1785780504704",
+  "date_range": {
+    "start": "2026-08-03",
+    "end": "2026-08-06"
+  },
+  "settings": {
+    "daysCount": 4,
+    "gamesPerDayValid": 1,
+    "useMandatory": false,
+    "selectedCategories": [
+      "casual",
+      "focus",
+      "grindeo",
+      "historia",
+      "indie",
+      "multiplayer",
+      "platino",
+      "roguelike"
+    ]
+  },
+  "days": [
+    {
+      "day": 1,
+      "label": "Día 1 (Lunes)",
+      "mandatoryTasks": [],
+      "tasks": [
+        {
+          "name": "Hades",
+          "slotCategory": "casual",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "roguelike",
+            "indie"
+          ],
+          "selected": true,
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "slotCategory": "focus",
+          "isMandatory": false,
+          "categories": [
+            "focus",
+            "platino",
+            "indie",
+            "historia"
+          ],
+          "selected": false,
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "slotCategory": "grindeo",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "indie",
+            "grindeo"
+          ],
+          "selected": false,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "label": "Día 2 (Martes)",
+      "mandatoryTasks": [],
+      "tasks": [
+        {
+          "name": "Celeste",
+          "slotCategory": "casual",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "indie",
+            "platino"
+          ],
+          "selected": false,
+          "completed": false
+        },
+        {
+          "name": "The Witcher 3: Wild Hunt",
+          "slotCategory": "focus",
+          "isMandatory": false,
+          "categories": [
+            "focus",
+            "historia"
+          ],
+          "selected": false,
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "slotCategory": "grindeo",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "indie",
+            "grindeo"
+          ],
+          "selected": true,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "label": "Día 3 (Miércoles)",
+      "mandatoryTasks": [],
+      "tasks": [
+        {
+          "name": "Vampire Survivors",
+          "slotCategory": "casual",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "grindeo"
+          ],
+          "selected": false,
+          "completed": false
+        },
+        {
+          "name": "Elden Ring",
+          "slotCategory": "focus",
+          "isMandatory": false,
+          "categories": [
+            "focus",
+            "platino"
+          ],
+          "selected": true,
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "slotCategory": "grindeo",
+          "isMandatory": false,
+          "categories": [
+            "grindeo",
+            "multiplayer"
+          ],
+          "selected": false,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "label": "Día 4 (Jueves)",
+      "mandatoryTasks": [],
+      "tasks": [
+        {
+          "name": "Hades",
+          "slotCategory": "casual",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "roguelike",
+            "indie"
+          ],
+          "selected": false,
+          "completed": false
+        },
+        {
+          "name": "The Witcher 3: Wild Hunt",
+          "slotCategory": "focus",
+          "isMandatory": false,
+          "categories": [
+            "focus",
+            "historia"
+          ],
+          "selected": true,
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "slotCategory": "grindeo",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "indie",
+            "grindeo"
+          ],
+          "selected": false,
+          "completed": false
+        }
+      ]
+    }
+  ]
+}
