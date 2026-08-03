@@ -181,3 +181,16 @@ body {
     box-shadow: none;
 }
 /* #endregion */
+
+/* Selección de juego: Tono verde bosque oscuro y elegante */
+.card-task-selected {
+    background-color: #11281c !important;
+    border: 1px solid #1e7e34 !important;
+    box-shadow: 0 2px 8px rgba(30, 126, 52, 0.25);
+}
+
+/* Tarjeta para elementos obligatorios */
+.bg-dark-mandatory {
+    background-color: #242013 !important;
+    border: 1px solid #856404 !important;
+}

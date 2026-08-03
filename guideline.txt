@@ -32,14 +32,14 @@
     * Click en "Backlogger" -> Redirige/Muestra la vista "Inicio".
 
   - VISTA "INICIO" (Dashboard principal con botones de acceso rápido):
-    [1] Quests             -> Visualizar la quest activa + Histórico de quests anteriores.
-    [2] Start new quest    -> Generador de misiones (Content Roll paso a paso):
+    [1] Start new quest    -> Generador de misiones (Content Roll paso a paso):
                               a. Ajuste de la pool de X días.
                               b. Selección de categorías disponibles en los datos.
                               c. Filtro opcional para incluir obligatorios (mandatory).
                               d. Generación: Elección de 1-X ítems por categoría y día.
                               e. Guardar resultado en /quests/ y registro en /history/.
                               f. Renderizado del "Tracker" diario con checkboxes por tarea.
+    [2] Quests             -> Visualizar la quest activa + Histórico de quests anteriores.
     [3] Editar elementos   -> Formulario CRUD (Añadir, borrar, modificar backlog).
     [4] Mostrar backlog    -> Vista general del inventario de juegos/libros.
     [5] Configuración      -> Opciones generales + Módulo de ajuste de "Burnout" (cooldowns/desgaste).
@@ -56,4 +56,23 @@
 
 /* Posibles implementaciones futuras 
 NO TENER EN CUENTA DURANTE EL DESARROLLO EXCEPTO MENCIÓN DIRECTA
+
+1. Cargar un "data" antiguo de remoto
+   - Descripción: Recuperar y decodificar en memoria un archivo JSON de respaldo previo alojado en el repositorio de GitHub.
+   - Complejidad: Muy Baja (1/5)
+
+2. Visualización remota (Listado y Contenido)
+   - Descripción: Explorador de respaldos para listar los archivos disponibles en el directorio remoto y consultar su contenido estructurado.
+   - Complejidad: Baja (2/5)
+
+3. Guardado múltiple el mismo día con sufijos
+   - Descripción: Permitir múltiples respaldos en la misma fecha incorporando un timestamp o identificador único al nombre del archivo (ej. YYYY-MM-DD_HHmmss.json).
+   - Complejidad: Baja (2/5)
+
+4. Retención y purga selectiva de backups
+   - Descripción: Depuración de archivos remotos con más de 7 días de antigüedad, preservando de forma inmune el respaldo más antiguo de cada mes (día 1 o menor).
+   - Complejidad: Media (3.5/5)
+
+5. Apartado de Daylist
+   - Descripción: Sección con elementos especiales "daily" donde activar o desactivar cada una, estas "daily" se añaden a las quest en un apartado separado
 */

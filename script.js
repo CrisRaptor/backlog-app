@@ -1,4 +1,4 @@
-//#region 1. Estado Global y Constantes
+//#region 1. Estado Global, Constantes y SVG
 let backlogData = [];
 let editingItemIndex = null;
 let selectedCategories = new Set();
@@ -8,7 +8,7 @@ let pendingSwitchIndex = null;
 let currentEditCategories = [];
 let editSearchTerm = "";
 
-// --- CONFIGURACIÓN DE GITHUB API ---
+// Configuración de la API REST de GitHub
 const GITHUB_CONFIG = {
     token: localStorage.getItem("github_token"),
     owner: "CrisRaptor",
@@ -16,25 +16,25 @@ const GITHUB_CONFIG = {
     folder: "data"
 };
 
-// SVGs personalizados para las tarjetas del panel principal
+// Iconos SVG personalizados para el Dashboard principal
 const CARD_ICONS = {
-    // 1. New Quest: Cofre del tesoro
+    // 1. New Quest: Tesoro
     newQuest: `<svg width="800px" height="800px" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-         <path fill-rule="evenodd" clip-rule="evenodd" d="M14.3675 2.15671C14.7781 2.01987 15.2219 2.01987 15.6325 2.15671L20.6325 3.82338C21.4491 4.09561 22 4.85988 22 5.72074V19.6126C22 20.9777 20.6626 21.9416 19.3675 21.5099L15 20.0541L9.63246 21.8433C9.22192 21.9801 8.77808 21.9801 8.36754 21.8433L3.36754 20.1766C2.55086 19.9044 2 19.1401 2 18.2792V4.38741C2 3.0223 3.33739 2.05836 4.63246 2.49004L9 3.94589L14.3675 2.15671ZM15 4.05408L9.63246 5.84326C9.22192 5.9801 8.77808 5.9801 8.36754 5.84326L4 4.38741V18.2792L9 19.9459L14.3675 18.1567C14.7781 18.0199 15.2219 18.0199 15.6325 18.1567L20 19.6126V5.72074L15 4.05408ZM13.2929 8.29288C13.6834 7.90235 14.3166 7.90235 14.7071 8.29288L15.5 9.08577L16.2929 8.29288C16.6834 7.90235 17.3166 7.90235 17.7071 8.29288C18.0976 8.6834 18.0976 9.31657 17.7071 9.70709L16.9142 10.5L17.7071 11.2929C18.0976 11.6834 18.0976 12.3166 17.7071 12.7071C17.3166 13.0976 16.6834 13.0976 13.2929 12.7071L15.5 11.9142L14.7071 12.7071C14.3166 13.0976 13.6834 13.0976 13.2929 12.7071C12.9024 12.3166 12.9024 11.6834 13.2929 11.2929L14.0858 10.5L13.2929 9.70709C12.9024 9.31657 12.9024 8.6834 13.2929 8.29288ZM6 16C6.55228 16 7 15.5523 7 15C7 14.4477 6.55228 14 6 14C5.44772 14 5 14.4477 5 15C5 15.5523 5.44772 16 6 16ZM9 12C9 12.5523 8.55228 13 8 13C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11C8.55228 11 9 11.4477 9 12ZM11 12C11.5523 12 12 11.5523 12 11C12 10.4477 11.5523 9.99998 11 9.99998C10.4477 9.99998 10 10.4477 10 11C10 11.5523 10.4477 12 11 12Z"
+         <path fill-rule="evenodd" clip-rule="evenodd" d="M14.3675 2.15671C14.7781 2.01987 15.2219 2.01987 15.6325 2.15671L20.6325 3.82338C21.4491 4.09561 22 4.85988 22 5.72074V19.6126C22 20.9777 20.6626 21.9416 19.3675 21.5099L15 20.0541L9.63246 21.8433C9.22192 21.9801 8.77808 21.9801 8.36754 21.8433L3.36754 20.1766C2.55086 19.9044 2 19.1401 2 18.2792V4.38741C2 3.0223 3.33739 2.05836 4.63246 2.49004L9 3.94589L14.3675 2.15671ZM15 4.05408L9.63246 5.84326C9.22192 5.9801 8.77808 5.9801 8.36754 5.84326L4 4.38741V18.2792L9 19.9459L14.3675 18.1567C14.7781 18.0199 15.2219 18.0199 15.6325 18.1567L20 19.6126V5.72074L15 4.05408ZM13.2929 8.29288C13.6834 7.90235 14.3166 7.90235 14.7071 8.29288L15.5 9.08577L16.2929 8.29288C16.6834 7.90235 17.3166 7.90235 17.7071 8.29288C18.0976 8.6834 18.0976 9.31657 17.7071 9.70709L16.9142 10.5L17.7071 11.2929C18.0976 11.6834 18.0976 12.3166 17.7071 12.7071C17.3166 13.0976 16.6834 13.0976 16.2929 12.7071L15.5 11.9142L14.7071 12.7071C14.3166 13.0976 13.6834 13.0976 13.2929 12.7071C12.9024 12.3166 12.9024 11.6834 13.2929 11.2929L14.0858 10.5L13.2929 9.70709C12.9024 9.31657 12.9024 8.6834 13.2929 8.29288ZM6 16C6.55228 16 7 15.5523 7 15C7 14.4477 6.55228 14 6 14C5.44772 14 5 14.4477 5 15C5 15.5523 5.44772 16 6 16ZM9 12C9 12.5523 8.55228 13 8 13C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11C8.55228 11 9 11.4477 9 12ZM11 12C11.5523 12 12 11.5523 12 11C12 10.4477 11.5523 9.99998 11 9.99998C10.4477 9.99998 10 10.4477 10 11C10 11.5523 10.4477 12 11 12Z"
       </svg>`,
 
-    // 2. Current Quest (quests): Pergamino abierto
+    // 2. Current Quest (quests): Pergamino
     quests: `<svg viewBox="0 0 24 24" fill="currentColor">
          <path id="Shape" d="M10.75,1.5A2.25,2.25,0,0,1,13,3.75v9.028h1.5V3.75A3.75,3.75,0,0,0,10.75,0H.75a.75.75,0,0,0,0,1.5C1.669,1.5,2,1.831,2,2.75v11A3.75,3.75,0,0,0,5.75,17.5h8V16h-8A2.25,2.25,0,0,1,3.5,13.75v-11A3.392,3.392,0,0,0,3.285,1.5Z" transform="translate(4.25 3.25)"/>
          <path id="Shape-2" data-name="Shape" d="M7.765,17.5A3.294,3.294,0,0,0,10.738,16H7.754C9.307,16,10,15,10,12.749a.751.751,0,0,1,.751-.75h8a.751.751,0,0,1,.75.75v1a3.755,3.755,0,0,1-3.75,3.75ZM10.738,16H15.75A2.253,2.253,0,0,0,18,13.749V13.5H11.472A5.4,5.4,0,0,1,10.738,16ZM7,16.75A.72.72,0,0,1,7.749,16h0v1.5A.719.719,0,0,1,7,16.75ZM.75,5.5A.751.751,0,0,1,0,4.75v-2a2.75,2.75,0,1,1,5.5,0v2a.751.751,0,0,1-.75.75ZM1.5,2.75V4H4V2.75a1.25,1.25,0,1,0-2.5,0Z" transform="translate(2.25 3.25)"/>
       </svg>`,
 
-    // 3. Editar: Lápiz de trazado
+    // 3. Editar: Lápiz
     edit: `<svg viewBox="0 0 24 24" fill="currentColor">
          <path fill-rule="evenodd" clip-rule="evenodd" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V7C19 7.55228 19.4477 8 20 8C20.5523 8 21 7.55228 21 7V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM22.1213 10.7071C20.9497 9.53553 19.0503 9.53553 17.8787 10.7071L16.1989 12.3869L11.2929 17.2929C11.1647 17.4211 11.0738 17.5816 11.0299 17.7575L10.0299 21.7575C9.94466 22.0982 10.0445 22.4587 10.2929 22.7071C10.5413 22.9555 10.9018 23.0553 11.2425 22.9701L15.2425 21.9701C15.4184 21.9262 15.5789 21.8353 15.7071 21.7071L20.5556 16.8586L22.2929 15.1213C23.4645 13.9497 23.4645 12.0503 22.2929 10.8787L22.1213 10.7071ZM18.3068 13.1074L19.2929 12.1213C19.6834 11.7308 20.3166 11.7308 20.7071 12.1213L20.8787 12.2929C21.2692 12.6834 21.2692 13.3166 20.8787 13.7071L19.8622 14.7236L18.3068 13.1074ZM16.8923 14.5219L18.4477 16.1381L14.4888 20.097L12.3744 20.6256L12.903 18.5112L16.8923 14.5219Z"    
       </svg>`,
 
-    // 4. Backlog: Lista con marcadores
+    // 4. Backlog: Lista
     backlog: `<svg viewBox="0 0 24 24" fill="currentColor">
          <path d="M8 6L21 6.00078M8 12L21 12.0008M8 18L21 18.0007M3 6.5H4V5.5H3V6.5ZM3 12.5H4V11.5H3V12.5ZM3 18.5H4V17.5H3V18.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
       </svg>`,
@@ -44,6 +44,18 @@ const CARD_ICONS = {
 <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M14.2703 4.54104C14.2703 3.68995 13.5803 3 12.7292 3H11.2706C10.4195 3 9.72953 3.68995 9.72953 4.54104C9.72953 5.19575 9.30667 5.76411 8.73133 6.07658C8.64137 6.12544 8.55265 6.17624 8.46522 6.22895C7.90033 6.56948 7.19241 6.65124 6.6199 6.32367C5.87282 5.89621 4.92082 6.15129 4.48754 6.89501L3.78312 8.10415C3.35155 8.84495 3.60624 9.79549 4.35038 10.2213C4.92043 10.5474 5.2042 11.1992 5.19031 11.8558C5.1893 11.9037 5.18879 11.9518 5.18879 12C5.18879 12.0482 5.1893 12.0963 5.19032 12.1443C5.20421 12.8009 4.92043 13.4526 4.3504 13.7787C3.60628 14.2045 3.35159 15.155 3.78315 15.8958L4.48759 17.105C4.92086 17.8487 5.87286 18.1038 6.61993 17.6763C7.19243 17.3488 7.90034 17.4305 8.46523 17.7711C8.55266 17.8238 8.64138 17.8746 8.73133 17.9234C9.30667 18.2359 9.72953 18.8042 9.72953 19.459C9.72953 20.3101 10.4195 21 11.2706 21H12.7292C13.5803 21 14.2703 20.3101 14.2703 19.459C14.2703 18.8042 14.6931 18.2359 15.2685 17.9234C15.3584 17.8746 15.4471 17.8238 15.5346 17.7711C16.0994 17.4305 16.8074 17.3488 17.3799 17.6763C18.1269 18.1038 19.0789 17.8487 19.5122 17.105L20.2167 15.8958C20.6482 15.1551 20.3935 14.2045 19.6494 13.7788C19.0794 13.4526 18.7956 12.8009 18.8095 12.1443C18.8105 12.0963 18.811 12.0482 18.811 12C18.811 11.9518 18.8105 11.9037 18.8095 11.8558C18.7956 11.1992 19.0794 10.5474 19.6494 10.2213C20.3936 9.79548 20.6482 8.84494 20.2167 8.10414L19.5123 6.89501C19.079 6.15128 18.127 5.8962 17.3799 6.32366C16.8074 6.65123 16.0995 6.56948 15.5346 6.22894C15.4471 6.17624 15.3584 6.12543 15.2685 6.07658C14.6931 5.76411 14.2703 5.19575 14.2703 4.54104Z" stroke="currentColor" stroke-width="2"/>   </svg>`
 };
+
+// Configuración global de la aplicación (añadido selector de juegos por día)
+let appSettings = JSON.parse(localStorage.getItem("app_settings")) || {
+    gamesPerDayValid: 1
+};
+
+function saveAppSettings() {
+    localStorage.setItem("app_settings", JSON.stringify(appSettings));
+}
+
+// Categorías con cuota por defecto = 1
+const DEFAULT_ACTIVE_CATEGORIES = ["casual", "focus", "grindeo"];
 //#endregion
 
 //#region 2. Inicialización y Carga de Datos
@@ -112,7 +124,7 @@ async function loadBacklogData() {
 }
 //#endregion
 
-//#region Guardado Remoto y Limpieza Automática
+//#region 3. Persistencia Remota y Limpieza (GitHub API)
 async function saveChangesToRemote() {
     const todayStr = new Date().toISOString().split("T")[0];
     const fileName = `${todayStr}.json`;
@@ -209,7 +221,7 @@ async function cleanupOldRemoteBackups() {
 }
 //#endregion
 
-//#region Eventos de Salida y Notificación
+//#region 4. Control de Eventos de Salida
 function setupUnsavedWarning() {
     // Advertir al usuario al cerrar la pestaña si hay cambios sin guardar
     window.addEventListener("beforeunload", (event) => {
@@ -221,7 +233,7 @@ function setupUnsavedWarning() {
 }
 //#endregion
 
-//#region 3. Enrutador SPA y Navegación
+//#region 5. Navegación y Enrutador SPA
 function navigateTo(viewName) {
     const container = document.getElementById("app-content");
     if (!container) return;
@@ -251,7 +263,7 @@ function navigateTo(viewName) {
 }
 //#endregion
 
-//#region 4. Vista - Inicio (Dashboard)
+//#region 6. Vista - Inicio (Dashboard)
 function renderHomeView() {
     return `
         <h1 class="h3 mb-4 text-light fw-bold text-center">Panel Principal</h1>
@@ -342,19 +354,716 @@ function renderHomeView() {
 }
 //#endregion
 
-//#region 5. Vista - [1] Quests y Seguimiento
+//#region 7. Vista - Quests y Seguimiento
 function renderQuestsView() {
     return `<h1 class="h4 mb-2 fw-bold">Quests y Seguimiento</h1><p class="text-secondary small">Visualizador de Quest activa e Historial.</p>`;
 }
 //#endregion
 
-//#region 6. Vista - [2] Start New Quest (Generador)
-function renderNewQuestView() {
-    return `<h1 class="h4 mb-2 fw-bold">Start New Quest</h1><p class="text-secondary small">Ajustes del roll: Días, categorías y obligatorios.</p>`;
+//#region 8. Vista - Start New Quest
+
+// Carga la última configuración previa o usa valores por defecto
+const savedQuestConfig = JSON.parse(localStorage.getItem("quest_last_config")) || {};
+
+let newQuestState = {
+    step: 'configure',
+    daysCount: savedQuestConfig.daysCount || 7,
+    gamesPerDayValid: savedQuestConfig.gamesPerDayValid || (appSettings.gamesPerDayValid || 1),
+    useMandatory: savedQuestConfig.useMandatory !== undefined ? savedQuestConfig.useMandatory : true,
+    selectedCategories: savedQuestConfig.selectedCategories || [],
+    dayConfigs: savedQuestConfig.dayConfigs || {},
+    generatedDays: [],
+    activeDayIndex: 0,
+    visitedDays: new Set()
+};
+
+// Guarda la configuración actual para futuras sesiones
+function saveQuestConfig() {
+    const configToSave = {
+        daysCount: newQuestState.daysCount,
+        gamesPerDayValid: newQuestState.gamesPerDayValid,
+        useMandatory: newQuestState.useMandatory,
+        selectedCategories: newQuestState.selectedCategories,
+        dayConfigs: newQuestState.dayConfigs
+    };
+    localStorage.setItem("quest_last_config", JSON.stringify(configToSave));
 }
+
+// Función para actualizar la cantidad requerida en el flujo de la nueva quest
+function updateQuestGamesPerDayValid(val) {
+    newQuestState.gamesPerDayValid = Math.max(1, parseInt(val, 10) || 1);
+}
+
+const WEEKDAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+
+// Enrutador interno para la vista de New Quest
+function renderNewQuestView() {
+    if (newQuestState.step === 'configure') {
+        return renderConfigureQuestStep();
+    } else {
+        return renderReviewQuestStep();
+    }
+}
+
+// -------------------------------------------------------------
+// FASE 1: VISTA DE CONFIGURACIÓN
+// -------------------------------------------------------------
+function renderConfigureQuestStep() {
+    const availableCategories = Array.from(
+        new Set(backlogData.flatMap(item => item.categories || []))
+    ).sort();
+
+    if (newQuestState.selectedCategories.length === 0) {
+        newQuestState.selectedCategories = [...availableCategories];
+    }
+
+    syncDayConfigs(availableCategories);
+
+    return `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h1 class="h4 fw-bold text-light mb-0">Start New Quest</h1>
+                <p class="text-secondary small mb-0">Configura los días, categorías y cuotas antes de generar.</p>
+            </div>
+            <button class="btn btn-primary fw-bold px-4" onclick="generateQuest()">
+                🚀 Generar Quest
+            </button>
+        </div>
+
+        <div class="card card-dark p-3 mb-4 shadow-sm border-subtle-custom">
+            <h2 class="h6 fw-bold text-warning text-uppercase mb-3" style="letter-spacing: 0.5px;">Parámetros de la Quest</h2>
+            
+            <div class="row g-3">
+                <!-- Duración en días -->
+                <div class="col-md-6">
+                    <label class="form-label text-light fw-bold">📅 Días de la Quest</label>
+                    <input type="number" class="form-control bg-dark text-light border-secondary" min="1" max="14" 
+                        value="${newQuestState.daysCount}" onchange="updateQuestDays(this.value)">
+                </div>
+
+                <!-- Cantidad mínima de juegos para validar el día -->
+                <div class="col-md-6">
+                    <label class="form-label text-light fw-bold">🎯 Meta diaria (Juegos a completar)</label>
+                    <input type="number" class="form-control bg-dark text-light border-secondary" min="1" max="10" 
+                        value="${newQuestState.gamesPerDayValid}" onchange="updateQuestGamesPerDayValid(this.value)">
+                    <span class="text-secondary small">Mínimo de juegos a completar para marcar el día como válido.</span>
+                </div>
+            </div>
+        </div>
+        <!-- 1. AJUSTES GENERALES -->
+        <div class="card card-dark p-3 mb-4 shadow-sm border-subtle-custom">
+            <h2 class="h6 fw-bold text-warning text-uppercase mb-3" style="letter-spacing: 0.5px;">1. Ajustes Generales</h2>
+            
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4 d-flex align-items-center">
+                    <div class="form-check form-switch mt-md-4">
+                        <input class="form-check-input" type="checkbox" id="quest-mandatory-toggle" 
+                            ${newQuestState.useMandatory ? 'checked' : ''} onchange="toggleQuestMandatory(this.checked)">
+                        <label class="form-check-label text-light fw-bold small" for="quest-mandatory-toggle">
+                            Utilizar elementos obligatorios
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3 pt-3 border-top border-subtle-custom">
+                <label class="form-label text-secondary small fw-bold d-block mb-2">Categorías activas</label>
+                <div class="d-flex flex-wrap gap-2">
+                    ${availableCategories.map(cat => {
+                        const isSelected = newQuestState.selectedCategories.includes(cat);
+                        return `
+                            <button type="button" class="btn btn-sm ${isSelected ? "btn-primary" : "btn-outline-secondary"} rounded-pill" 
+                                onclick="toggleQuestCategory('${cat}')">
+                                ${isSelected ? '✓ ' : '+ '}${capitalize(cat)}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CUOTAS DIARIAS -->
+        <div class="card card-dark p-3 mb-4 shadow-sm border-subtle-custom">
+            <h2 class="h6 fw-bold text-info text-uppercase mb-3" style="letter-spacing: 0.5px;">2. Objetivos Diarios por Categoría</h2>
+            ${newQuestState.selectedCategories.length === 0 ? `
+                <p class="text-warning small fst-italic mb-0">Selecciona al menos una categoría arriba para continuar.</p>
+            ` : `
+                <div class="accordion" id="accordionQuestDays">
+                    ${renderDailyScheduleAccordion()}
+                </div>
+            `}
+        </div>
+    `;
+}
+
+// Generar la Quest inicial y guardar el primer archivo history-[fecha]
+async function generateQuest() {
+    if (newQuestState.selectedCategories.length === 0) {
+        alert("Por favor, selecciona al menos una categoría para poder generar la quest, Jefe.");
+        return;
+    }
+
+    // Guardar configuración utilizada
+    saveQuestConfig();
+
+    const todayStr = new Date().toISOString().split("T")[0];
+
+    // 1. Pool de obligatorios pendientes
+    const mandatoryGames = backlogData.filter(g => g.mandatory && g.status !== "completed");
+
+    // 2. Pool normal (Si useMandatory es true, se excluyen de la pool común para no duplicar)
+    const eligibleGames = backlogData.filter(item => {
+        const matchesCategory = item.categories && item.categories.some(c => newQuestState.selectedCategories.includes(c));
+        if (newQuestState.useMandatory && item.mandatory) return false;
+        return matchesCategory && item.status !== "completed";
+    });
+
+    newQuestState.generatedDays = [];
+
+    for (let i = 0; i < newQuestState.daysCount; i++) {
+        const dayLabel = getDayLabel(i);
+        const dayLimits = newQuestState.dayConfigs[dayLabel] || {};
+        const mandatoryTasksForDay = [];
+        const assignedGamesForDay = [];
+        const usedGameNamesInDay = new Set();
+
+        // Si los obligatorios están ACTIVADOS: se auto-seleccionan por separado sin consumir la cuota diaria
+        if (newQuestState.useMandatory) {
+            mandatoryGames.forEach(g => {
+                mandatoryTasksForDay.push({
+                    name: g.name,
+                    isMandatory: true,
+                    categories: g.categories || [],
+                    selected: true,
+                    completed: false
+                });
+            });
+        }
+
+        // Selección normal por categorías
+        newQuestState.selectedCategories.forEach(cat => {
+            const limit = parseInt(dayLimits[cat], 10) || 0;
+            if (limit <= 0) return;
+
+            const catGames = eligibleGames.filter(g => 
+                g.categories && g.categories.includes(cat) && !usedGameNamesInDay.has(g.name)
+            );
+
+            if (catGames.length > 0) {
+                const countToPick = Math.min(limit, catGames.length);
+                const shuffled = [...catGames].sort(() => 0.5 - Math.random());
+                const picked = shuffled.slice(0, countToPick);
+
+                picked.forEach(g => {
+                    usedGameNamesInDay.add(g.name);
+                    assignedGamesForDay.push({
+                        name: g.name,
+                        slotCategory: cat,
+                        isMandatory: false,
+                        categories: g.categories || [cat],
+                        selected: false,
+                        completed: false
+                    });
+                });
+            }
+        });
+
+        newQuestState.generatedDays.push({
+            day: i + 1,
+            label: dayLabel,
+            mandatoryTasks: mandatoryTasksForDay,
+            tasks: assignedGamesForDay
+        });
+    }
+
+    const initialHistoryPayload = {
+        configuracion: { ...newQuestState },
+        opciones: newQuestState.generatedDays
+    };
+
+    const historyFileName = `history-${todayStr}.json`;
+    await commitJsonFile(`history/${historyFileName}`, initialHistoryPayload, `Crear historial inicial: ${historyFileName}`);
+
+    newQuestState.step = 'review';
+    newQuestState.activeDayIndex = 0;
+    newQuestState.visitedDays = new Set([0]);
+
+    navigateTo('newQuest');
+}
+
+// -------------------------------------------------------------
+// FASE 2: VISTA DE REVISIÓN Y SELECCIÓN POR DÍAS (POST-GENERAR)
+// -------------------------------------------------------------
+function renderReviewQuestStep() {
+    const isQuestReady = areAllDaysValid();
+    const validDaysCount = newQuestState.generatedDays.filter(d => isDayValid(d)).length;
+    const activeDay = newQuestState.generatedDays[newQuestState.activeDayIndex];
+
+    return `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h1 class="h4 fw-bold text-light mb-0">Revisión de Quest</h1>
+                <p class="text-secondary small mb-0">Selecciona exactamente <strong>${newQuestState.gamesPerDayValid}</strong> juego(s) por día para validar la quest.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm" onclick="resetToConfigure()">
+                    ⚙️ Reconfigurar
+                </button>
+                <button class="btn ${isQuestReady ? 'btn-success' : 'btn-secondary'} fw-bold px-4" 
+                    id="btn-accept-quest"
+                    ${!isQuestReady ? 'disabled' : ''} 
+                    onclick="acceptAndGenerateQuest()">
+                    ${isQuestReady ? '✅ Aceptar Quest' : `🔒 Valida los días (${validDaysCount}/${newQuestState.daysCount})`}
+                </button>
+            </div>
+        </div>
+
+        <!-- BARRA SUPERIOR DE DÍAS DISPONIBLES -->
+        <div class="mb-4">
+            <label class="form-label text-secondary small fw-bold mb-2">Navegación de días:</label>
+            <div class="d-flex overflow-auto gap-2 pb-2" style="scrollbar-width: thin;">
+                ${newQuestState.generatedDays.map((day, idx) => {
+                    const isActive = idx === newQuestState.activeDayIndex;
+                    const isValid = isDayValid(day);
+                    const selectedInDay = day.tasks.filter(t => t.selected).length;
+
+                    let btnStyle = 'btn-outline-secondary';
+                    if (isActive) {
+                        btnStyle = 'btn-primary shadow-lg';
+                    } else if (isValid) {
+                        btnStyle = 'btn-outline-success';
+                    }
+
+                    return `
+                        <button class="btn ${btnStyle} fw-bold text-nowrap px-3 py-2 d-flex align-items-center gap-2" 
+                            onclick="selectReviewDay(${idx})">
+                            <span>Día ${idx + 1}</span>
+                            ${isValid 
+                                ? '<span class="badge bg-success text-white rounded-circle" title="Día válido">✓</span>' 
+                                : `<span class="badge bg-dark text-warning border border-warning" title="Seleccionados">${selectedInDay}/${newQuestState.gamesPerDayValid}</span>`
+                            }
+                        </button>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+
+        <!-- VISTA DEL DÍA SELECCIONADO Y SUS OPCIONES PERTINENTES -->
+        <div class="card card-dark p-3 mb-4 shadow-sm border-subtle-custom">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h6 fw-bold text-info text-uppercase mb-0">${activeDay ? activeDay.label : ''}</h2>
+                ${activeDay ? `
+                    <span class="badge ${isDayValid(activeDay) ? 'bg-success' : 'bg-warning text-dark'} fw-bold">
+                        ${isDayValid(activeDay) ? '✓ Día Válido' : `Seleccionados: ${activeDay.tasks.filter(t => t.selected).length} / ${newQuestState.gamesPerDayValid}`}
+                    </span>
+                ` : ''}
+            </div>
+            
+            <div class="row g-3">
+                ${renderDayTasksList(activeDay)}
+            </div>
+        </div>
+    `;
+}
+
+// Mapea qué juegos están seleccionados y en qué día específico
+function getSelectedGamesMap() {
+    const map = new Map();
+    newQuestState.generatedDays.forEach((dayData, dIdx) => {
+        dayData.tasks.forEach(task => {
+            if (task.selected) {
+                map.set(task.name, dIdx + 1);
+            }
+        });
+    });
+    return map;
+}
+
+// Renderizado de las tarjetas del día
+function renderDayTasksList(dayData) {
+    if (!dayData) return '';
+
+    const selectedMap = getSelectedGamesMap();
+    const currentDayNum = newQuestState.activeDayIndex + 1;
+
+    let html = '';
+
+    // BLOQUE SEPARADO DE OBLIGATORIOS (Si la opción está activa)
+    if (newQuestState.useMandatory && dayData.mandatoryTasks && dayData.mandatoryTasks.length > 0) {
+        html += `
+            <div class="col-12 mb-3">
+                <h4 class="h6 text-warning fw-bold border-bottom border-secondary pb-1">⚡ Tareas Obligatorias (Auto-seleccionadas, no consumen cuota)</h4>
+                <div class="row g-2">
+                    ${dayData.mandatoryTasks.map(mTask => `
+                        <div class="col-md-6">
+                            <div class="p-3 bg-dark-mandatory rounded d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h3 class="h6 fw-bold text-light mb-0">${mTask.name}</h3>
+                                    <span class="badge bg-warning text-dark mt-1">Obligatorio</span>
+                                </div>
+                                <span class="badge bg-success">✓ Auto-marcado</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // BLOQUE DE ELECCIONES NORMALES
+    if (!dayData.tasks || dayData.tasks.length === 0) {
+        return html + `<div class="col-12"><p class="text-secondary fst-italic">No hay opciones configuradas para este día.</p></div>`;
+    }
+
+    html += `<div class="col-12"><h4 class="h6 text-info fw-bold border-bottom border-secondary pb-1">🎮 Selección Normal del Día</h4></div>`;
+
+    html += dayData.tasks.map((task, taskIdx) => {
+        const isSelected = !!task.selected;
+        const slotCat = task.slotCategory || task.category;
+        const otherCats = (task.categories || []).filter(c => c.toLowerCase() !== slotCat.toLowerCase());
+
+        // Verificar si fue elegido en OTRO día
+        const selectedOnDay = selectedMap.get(task.name);
+        const isSelectedOnOtherDay = selectedOnDay !== undefined && selectedOnDay !== currentDayNum;
+
+        let cardClass = "border-subtle-custom bg-dark";
+        if (isSelected) {
+            cardClass = "card-task-selected"; // Verde oscuro elegante
+        } else if (isSelectedOnOtherDay) {
+            cardClass = "border-secondary bg-dark opacity-50"; // Visualmente atenuado
+        }
+
+        return `
+            <div class="col-md-6">
+                <div class="p-3 ${cardClass} rounded d-flex justify-content-between align-items-center transition-all">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h3 class="h6 fw-bold text-light mb-0">${task.name}</h3>
+                            ${isSelected ? '<span class="badge bg-success">Seleccionado</span>' : ''}
+                            ${isSelectedOnOtherDay ? `<span class="badge bg-danger">Ya elegido en Día ${selectedOnDay}</span>` : ''}
+                        </div>
+                        <div class="d-flex flex-wrap gap-1 align-items-center mt-1">
+                            <span class="badge bg-warning text-dark fw-bold me-1 border border-warning">⭐ ${capitalize(slotCat)}</span>
+                            ${otherCats.map(c => `<span class="badge badge-category me-1">${capitalize(c)}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center ms-2">
+                        <button type="button" class="btn btn-sm btn-outline-warning" 
+                            onclick="swapGameForTask(${newQuestState.activeDayIndex}, ${taskIdx}, '${slotCat}')">
+                            🔄
+                        </button>
+                        <button type="button" 
+                            class="btn btn-sm ${isSelected ? 'btn-success' : 'btn-outline-light'} fw-bold" 
+                            ${isSelectedOnOtherDay && !isSelected ? 'disabled title="Juego ya seleccionado en otro día"' : ''}
+                            onclick="toggleTaskSelection(${newQuestState.activeDayIndex}, ${taskIdx})">
+                            ${isSelected ? '✓ Marcado' : (isSelectedOnOtherDay ? '🔒 Bloqueado' : '+ Seleccionar')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    return html;
+}
+
+// Bloqueo en la función de activación
+function toggleTaskSelection(dayIdx, taskIdx) {
+    const day = newQuestState.generatedDays[dayIdx];
+    if (!day || !day.tasks[taskIdx]) return;
+
+    const task = day.tasks[taskIdx];
+    const selectedMap = getSelectedGamesMap();
+    const selectedOnDay = selectedMap.get(task.name);
+
+    // Impedir seleccionar si ya pertenece a otro día
+    if (!task.selected && selectedOnDay !== undefined && selectedOnDay !== (dayIdx + 1)) {
+        alert(`El juego "${task.name}" ya ha sido seleccionado en el Día ${selectedOnDay}, Jefe.`);
+        return;
+    }
+
+    task.selected = !task.selected;
+    navigateTo('newQuest');
+}
+
+// Cambiar juego respetando el slot y evitando duplicados en el mismo día
+function swapGameForTask(dayIdx, taskIdx, slotCategory) {
+    const dayData = newQuestState.generatedDays[dayIdx];
+    const currentTask = dayData.tasks[taskIdx];
+
+    const gamesToday = new Set(dayData.tasks.map(t => t.name));
+
+    const eligiblePool = backlogData.filter(g => {
+        const matchesCat = g.categories && g.categories.includes(slotCategory);
+        const matchesMandatory = newQuestState.useMandatory ? true : !g.mandatory;
+        const isNotCompleted = g.status !== "completed";
+        const notAssignedToday = !gamesToday.has(g.name) || g.name === currentTask.name;
+        return matchesCat && matchesMandatory && isNotCompleted && notAssignedToday && g.name !== currentTask.name;
+    });
+
+    if (eligiblePool.length === 0) {
+        alert(`No hay otros juegos en el backlog con la categoría "${slotCategory}" que no estén asignados hoy, Jefe.`);
+        return;
+    }
+
+    const newGame = eligiblePool[Math.floor(Math.random() * eligiblePool.length)];
+
+    dayData.tasks[taskIdx] = {
+        name: newGame.name,
+        slotCategory: slotCategory,
+        categories: newGame.categories || [slotCategory],
+        completed: false
+    };
+
+    navigateTo('newQuest');
+}
+
+function selectReviewDay(idx) {
+    newQuestState.activeDayIndex = idx;
+    newQuestState.visitedDays.add(idx);
+    navigateTo('newQuest');
+}
+
+function resetToConfigure() {
+    newQuestState.step = 'configure';
+    navigateTo('newQuest');
+}
+
+// -------------------------------------------------------------
+// FINALIZAR: ACEPTAR QUEST Y GUARDAR ARCHIVOS FINALES
+// -------------------------------------------------------------
+async function acceptAndGenerateQuest() {
+    if (newQuestState.visitedDays.size < newQuestState.daysCount) {
+        alert("Debes elegir/revisar cada día de la quest antes de finalizar la selección, Jefe.");
+        return;
+    }
+
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setDate(startDate.getDate() + (newQuestState.daysCount - 1));
+
+    const startDateStr = startDate.toISOString().split("T")[0];
+    const endDateStr = endDate.toISOString().split("T")[0];
+
+    const questFileName = `quest-${startDateStr}-al-${endDateStr}.json`;
+    const historyFinalFileName = `history-${startDateStr}-final.json`;
+
+    const questPayload = {
+        quest_id: `quest_${Date.now()}`,
+        date_range: { start: startDateStr, end: endDateStr },
+        settings: {
+            daysCount: newQuestState.daysCount,
+            gamesPerDayValid: newQuestState.gamesPerDayValid, // <--- Guardado en el JSON final de la quest
+            useMandatory: newQuestState.useMandatory,
+            selectedCategories: newQuestState.selectedCategories
+        },
+        days: newQuestState.generatedDays
+    };
+
+    const historyFinalPayload = {
+        configuracion: {
+            daysCount: newQuestState.daysCount,
+            useMandatory: newQuestState.useMandatory,
+            selectedCategories: newQuestState.selectedCategories,
+            dayConfigs: newQuestState.dayConfigs,
+            gamesPerDayValid: newQuestState.gamesPerDayValid // <--- Guardado en el historial final
+        },
+        opciones: newQuestState.generatedDays,
+        status: "accepted",
+        accepted_at: new Date().toISOString()
+    };
+
+    await commitJsonFile(`quests/${questFileName}`, questPayload, `Crear quest finalizada: ${questFileName}`);
+    await commitJsonFile(`history/${historyFinalFileName}`, historyFinalPayload, `Crear historial final: ${historyFinalFileName}`);
+
+    alert(`¡Quest aceptada con éxito, Jefe!\n\nArchivos guardados correctamente:\n- ${questFileName}\n- ${historyFinalFileName}`);
+
+    // Reiniciar New Quest a fase de ajustes y redirigir
+    newQuestState.step = 'configure';
+    newQuestState.visitedDays = new Set();
+    navigateTo('quests');
+}
+
+// Helper para guardar JSON remoto/local
+async function commitJsonFile(filePath, payload, commitMessage) {
+    const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+
+    try {
+        let sha = null;
+        const checkFile = await fetch(
+            `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${filePath}`,
+            { headers: { Authorization: `token ${GITHUB_CONFIG.token}` } }
+        );
+        if (checkFile.ok) {
+            const fileData = await checkFile.json();
+            sha = fileData.sha;
+        }
+
+        const response = await fetch(
+            `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${filePath}`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `token ${GITHUB_CONFIG.token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: commitMessage,
+                    content: contentEncoded,
+                    sha: sha || undefined
+                })
+            }
+        );
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    } catch (error) {
+        console.warn(`⚠️ Fallo en guardado remoto (${filePath}), creando backup en localStorage:`, error);
+        localStorage.setItem(filePath.replace('/', '_'), JSON.stringify(payload));
+    }
+}
+
+// -------------------------------------------------------------
+// FUNCIONES DE SOPORTE DE VISTA Y CONFIGURACIÓN
+// -------------------------------------------------------------
+function syncDayConfigs(availableCategories) {
+    for (let i = 0; i < newQuestState.daysCount; i++) {
+        const dayLabel = getDayLabel(i);
+        if (!newQuestState.dayConfigs[dayLabel]) {
+            newQuestState.dayConfigs[dayLabel] = {};
+        }
+        availableCategories.forEach(cat => {
+            if (newQuestState.dayConfigs[dayLabel][cat] === undefined) {
+                // Por defecto casual, focus y grindeo = 1, resto = 0
+                const isDefaultActive = DEFAULT_ACTIVE_CATEGORIES.includes(cat.toLowerCase());
+                newQuestState.dayConfigs[dayLabel][cat] = isDefaultActive ? 1 : 0;
+            }
+        });
+    }
+}
+
+function getDayLabel(index) {
+    const dayName = WEEKDAYS[index % 7];
+    return `Día ${index + 1} (${dayName})`;
+}
+
+function updateQuestDays(value) {
+    const days = parseInt(value, 10);
+    if (days >= 1 && days <= 14) {
+        newQuestState.daysCount = days;
+        navigateTo('newQuest');
+    }
+}
+
+function toggleQuestMandatory(checked) {
+    newQuestState.useMandatory = checked;
+}
+
+function toggleQuestCategory(cat) {
+    if (newQuestState.selectedCategories.includes(cat)) {
+        newQuestState.selectedCategories = newQuestState.selectedCategories.filter(c => c !== cat);
+    } else {
+        newQuestState.selectedCategories.push(cat);
+    }
+    navigateTo('newQuest');
+}
+
+function renderDailyScheduleAccordion() {
+    let html = "";
+    for (let i = 0; i < newQuestState.daysCount; i++) {
+        const dayLabel = getDayLabel(i);
+        const collapseId = `collapseDay_${i}`;
+
+        html += `
+            <div class="accordion-item bg-dark border-subtle-custom text-light mb-2 rounded">
+                <h2 class="accordion-header" id="heading_${i}">
+                    <button class="accordion-button bg-dark text-light border-0 shadow-none ${i !== 0 ? 'collapsed' : ''}" 
+                        type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                        <strong class="text-primary me-2">${dayLabel}</strong>
+                    </button>
+                </h2>
+                <div id="${collapseId}" class="accordion-collapse collapse ${i === 0 ? 'show' : ''}" data-bs-parent="#accordionQuestDays">
+                    <div class="accordion-body border-top border-subtle-custom pt-3">
+                        <div class="d-flex justify-content-end mb-2">
+                            <button type="button" class="btn btn-sm btn-outline-info" onclick="applyDayToAll('${dayLabel}')">
+                                📋 Aplicar esta configuración a todos los días
+                            </button>
+                        </div>
+                        <div class="row g-2">
+                            ${newQuestState.selectedCategories.map(cat => {
+                                const currentVal = newQuestState.dayConfigs[dayLabel]?.[cat] ?? "any";
+                                return `
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="p-2 card-dark border-subtle-custom rounded d-flex justify-content-between align-items-center">
+                                            <span class="badge badge-category fs-6">${capitalize(cat)}</span>
+                                            <select class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto;"
+                                                onchange="updateCategoryQuota('${dayLabel}', '${cat}', this.value)">
+                                                <option value="any" ${currentVal === "any" ? 'selected' : ''}>Cualquier cantidad</option>
+                                                <option value="0" ${currentVal === 0 || currentVal === "0" ? 'selected' : ''}>0 juegos</option>
+                                                <option value="1" ${currentVal === 1 || currentVal === "1" ? 'selected' : ''}>1 juego</option>
+                                                <option value="2" ${currentVal === 2 || currentVal === "2" ? 'selected' : ''}>2 juegos</option>
+                                                <option value="3" ${currentVal === 3 || currentVal === "3" ? 'selected' : ''}>3 juegos</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    return html;
+}
+
+function updateCategoryQuota(dayLabel, category, value) {
+    if (!newQuestState.dayConfigs[dayLabel]) {
+        newQuestState.dayConfigs[dayLabel] = {};
+    }
+    newQuestState.dayConfigs[dayLabel][category] = value === "any" ? "any" : parseInt(value, 10);
+}
+
+function applyDayToAll(sourceDayLabel) {
+    const sourceConfig = { ...newQuestState.dayConfigs[sourceDayLabel] };
+    for (let i = 0; i < newQuestState.daysCount; i++) {
+        const targetDayLabel = getDayLabel(i);
+        newQuestState.dayConfigs[targetDayLabel] = { ...sourceConfig };
+    }
+    navigateTo('newQuest');
+    alert(`¡Configuración de ${sourceDayLabel} duplicada en todos los días!`);
+}
+
+// Comprueba si un día tiene EXACTAMENTE la cantidad de juegos seleccionados requerida
+function isDayValid(dayData) {
+    if (!dayData || !dayData.tasks) return false;
+    const selectedCount = dayData.tasks.filter(t => t.selected).length;
+    return selectedCount === newQuestState.gamesPerDayValid;
+}
+
+// Comprueba si TODOS los días de la quest han alcanzado la meta requerida
+function areAllDaysValid() {
+    if (!newQuestState.generatedDays || newQuestState.generatedDays.length === 0) return false;
+    return newQuestState.generatedDays.every(day => isDayValid(day));
+}
+
+// Permite marcar o desmarcar un juego en un día específico
+function toggleTaskSelection(dayIdx, taskIdx) {
+    const day = newQuestState.generatedDays[dayIdx];
+    if (!day || !day.tasks[taskIdx]) return;
+
+    const task = day.tasks[taskIdx];
+    
+    // Cambiar estado seleccionado / desmarcado
+    task.selected = !task.selected;
+
+    // Redibujar la vista para refrescar contadores e indicadores visuales
+    navigateTo('newQuest');
+}
+
 //#endregion
 
-//#region 7. Vista - [3] Editar Elementos (CRUD)
+//#region 9. Vista - Gestión y CRUD de Elementos
 function renderEditView() {
     return `
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -702,12 +1411,7 @@ function executeDeleteItem() {
 }
 //#endregion
 
-//#region 8. Vista - [4] Mostrar Backlog
-function capitalize(str) {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
+//#region 10. Vista - Visualizador de Backlog
 function renderBacklogView() {
     const allCategories = Array.from(
         new Set(backlogData.flatMap(item => item.categories || []))
@@ -745,10 +1449,10 @@ function renderBacklogView() {
 
         <!-- Secciones compactas por Estado -->
         <div class="d-flex flex-column gap-2">
-    ${renderStatusSection("Pending", "text-primary", "card-status-pending")}
-    ${renderStatusSection("Dropped", "text-danger", "card-status-inactive")}
-    ${renderStatusSection("Completed", "text-success", "card-status-complete")}
-</div>
+            ${renderStatusSection("Pending", "text-primary", "card-status-pending")}
+            ${renderStatusSection("Dropped", "text-danger", "card-status-inactive")}
+            ${renderStatusSection("Completed", "text-success", "card-status-complete")}
+        </div>
     `;
 }
 
@@ -831,8 +1535,15 @@ function clearCategoryFilters() {
 }
 //#endregion
 
-//#region 9. Vista - [5] Configuración y Burnout
+//#region 11. Vista - Configuración y Burnout
 function renderSettingsView() {
     return `<h1 class="h4 mb-2 fw-bold">Configuración y Burnout</h1><p class="text-secondary small">Ajuste de parámetros generales.</p>`;
+}
+//#endregion
+
+//#region 12. Funciones Auxiliares y Helpers
+function capitalize(str) {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 //#endregion
