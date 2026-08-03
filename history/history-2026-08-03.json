@@ -1,0 +1,263 @@
+{
+  "configuracion": {
+    "daysCount": 3,
+    "useMandatory": true,
+    "selectedCategories": [
+      "casual",
+      "focus",
+      "grindeo",
+      "historia",
+      "indie",
+      "multiplayer",
+      "platino",
+      "roguelike"
+    ],
+    "dayConfigs": {
+      "Día 1 (Lunes)": {
+        "casual": 1,
+        "focus": 1,
+        "grindeo": 1,
+        "historia": "any",
+        "indie": "any",
+        "multiplayer": "any",
+        "platino": "any",
+        "roguelike": "any"
+      },
+      "Día 2 (Martes)": {
+        "casual": 1,
+        "focus": 1,
+        "grindeo": 1,
+        "historia": "any",
+        "indie": "any",
+        "multiplayer": "any",
+        "platino": "any",
+        "roguelike": "any"
+      },
+      "Día 3 (Miércoles)": {
+        "casual": 1,
+        "focus": 1,
+        "grindeo": 1,
+        "historia": "any",
+        "indie": "any",
+        "multiplayer": "any",
+        "platino": "any",
+        "roguelike": "any"
+      },
+      "Día 4 (Jueves)": {
+        "casual": "any",
+        "focus": "any",
+        "grindeo": "any",
+        "historia": "any",
+        "indie": "any",
+        "multiplayer": "any",
+        "platino": "any",
+        "roguelike": "any"
+      },
+      "Día 5 (Viernes)": {
+        "casual": "any",
+        "focus": "any",
+        "grindeo": "any",
+        "historia": "any",
+        "indie": "any",
+        "multiplayer": "any",
+        "platino": "any",
+        "roguelike": "any"
+      },
+      "Día 6 (Sábado)": {
+        "casual": "any",
+        "focus": "any",
+        "grindeo": "any",
+        "historia": "any",
+        "indie": "any",
+        "multiplayer": "any",
+        "platino": "any",
+        "roguelike": "any"
+      },
+      "Día 7 (Domingo)": {
+        "casual": "any",
+        "focus": "any",
+        "grindeo": "any",
+        "historia": "any",
+        "indie": "any",
+        "multiplayer": "any",
+        "platino": "any",
+        "roguelike": "any"
+      }
+    }
+  },
+  "opciones": [
+    {
+      "day": 1,
+      "label": "Día 1 (Lunes)",
+      "tasks": [
+        {
+          "name": "Stardew Valley",
+          "category": "casual",
+          "completed": false
+        },
+        {
+          "name": "The Witcher 3: Wild Hunt",
+          "category": "focus",
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "category": "grindeo",
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "category": "historia",
+          "completed": false
+        },
+        {
+          "name": "Hades",
+          "category": "indie",
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "category": "indie",
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "category": "multiplayer",
+          "completed": false
+        },
+        {
+          "name": "Elden Ring",
+          "category": "platino",
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "category": "platino",
+          "completed": false
+        },
+        {
+          "name": "Hades",
+          "category": "roguelike",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "label": "Día 2 (Martes)",
+      "tasks": [
+        {
+          "name": "Hades",
+          "category": "casual",
+          "completed": false
+        },
+        {
+          "name": "Persona 5 Royal",
+          "category": "focus",
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "category": "grindeo",
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "category": "historia",
+          "completed": false
+        },
+        {
+          "name": "The Witcher 3: Wild Hunt",
+          "category": "historia",
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "category": "indie",
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "category": "indie",
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "category": "multiplayer",
+          "completed": false
+        },
+        {
+          "name": "Elden Ring",
+          "category": "platino",
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "category": "platino",
+          "completed": false
+        },
+        {
+          "name": "Hades",
+          "category": "roguelike",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "label": "Día 3 (Miércoles)",
+      "tasks": [
+        {
+          "name": "Stardew Valley",
+          "category": "casual",
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "category": "focus",
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "category": "grindeo",
+          "completed": false
+        },
+        {
+          "name": "Persona 5 Royal",
+          "category": "historia",
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "category": "indie",
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "category": "indie",
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "category": "multiplayer",
+          "completed": false
+        },
+        {
+          "name": "Celeste",
+          "category": "platino",
+          "completed": false
+        },
+        {
+          "name": "Elden Ring",
+          "category": "platino",
+          "completed": false
+        },
+        {
+          "name": "Hades",
+          "category": "roguelike",
+          "completed": false
+        }
+      ]
+    }
+  ]
+}
