@@ -2,7 +2,6 @@
 let backlogData = [];
 let editingItemIndex = null;
 let selectedCategories = new Set();
-
 let hasUnsavedChanges = false;
 let pendingSwitchIndex = null;
 let currentEditCategories = [];
@@ -204,14 +203,70 @@ async function cleanupOldRemoteBackups() {
 }
 //#endregion
 
-//#region 4. Control de Eventos de Salida
+//#region 4. Control de Eventos de Salida y Auto-Guardado
 function setupUnsavedWarning() {
     window.addEventListener("beforeunload", (event) => {
         if (hasUnsavedChanges) {
+            autoSaveOnLeave();
             event.preventDefault();
-            event.returnValue = "Tienes cambios sin guardar. ¿Seguro que deseas salir?";
+            event.returnValue = "Tienes cambios sin guardar. Se intentará guardarlos automáticamente antes de salir.";
         }
     });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden" && hasUnsavedChanges) {
+            autoSaveOnLeave();
+        }
+    });
+}
+
+async function autoSaveOnLeave() {
+    if (!hasUnsavedChanges) return;
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    const fileName = `${todayStr}.json`;
+    const filePath = `${GITHUB_CONFIG.folder}/${fileName}`;
+    const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(backlogData, null, 2))));
+
+    localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
+
+    try {
+        let sha = null;
+        const checkFile = await fetch(
+            `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${filePath}`,
+            { 
+                headers: { Authorization: `token ${GITHUB_CONFIG.token}` },
+                keepalive: true 
+            }
+        );
+        if (checkFile.ok) {
+            const fileData = await checkFile.json();
+            sha = fileData.sha;
+        }
+
+        await fetch(
+            `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${filePath}`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `token ${GITHUB_CONFIG.token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: `Auto-backup backlog (al salir): ${fileName}`,
+                    content: contentEncoded,
+                    sha: sha || undefined
+                }),
+                keepalive: true
+            }
+        );
+
+        hasUnsavedChanges = false;
+        updateSaveButtonIndicator();
+        console.log("✅ Auto-guardado al abandonar la página completado.");
+    } catch (error) {
+        console.warn("⚠️ No se pudo completar el auto-guardado remoto al salir:", error);
+    }
 }
 //#endregion
 
@@ -827,10 +882,8 @@ async function generateQuest() {
 
     const todayStr = new Date().toISOString().split("T")[0];
 
-    // 1. Pool de obligatorios pendientes (EXCLUYENDO BURNOUT)
     const mandatoryGames = backlogData.filter(g => g.mandatory && g.status !== "completed" && !g.burnout);
 
-    // 2. Pool normal (EXCLUYENDO BURNOUT)
     const eligibleGames = backlogData.filter(item => {
         const matchesCategory = item.categories && item.categories.some(c => newQuestState.selectedCategories.includes(c));
         if (newQuestState.useMandatory && item.mandatory) return false;
@@ -1099,7 +1152,6 @@ function toggleTaskSelection(dayIdx, taskIdx) {
     navigateTo('newQuest');
 }
 
-// Reemplazo de tarea excluyendo también burnout === true
 function swapGameForTask(dayIdx, taskIdx, slotCategory) {
     const dayData = newQuestState.generatedDays[dayIdx];
     const currentTask = dayData.tasks[taskIdx];
@@ -1110,7 +1162,7 @@ function swapGameForTask(dayIdx, taskIdx, slotCategory) {
         const matchesCat = g.categories && g.categories.includes(slotCategory);
         const matchesMandatory = newQuestState.useMandatory ? true : !g.mandatory;
         const isNotCompleted = g.status !== "completed";
-        const isNotBurnout = !g.burnout; // EXCLUIR BURNOUT
+        const isNotBurnout = !g.burnout;
         const notAssignedToday = !gamesToday.has(g.name) || g.name === currentTask.name;
         return matchesCat && matchesMandatory && isNotCompleted && isNotBurnout && notAssignedToday && g.name !== currentTask.name;
     });
@@ -1416,7 +1468,7 @@ function renderEditView() {
                         </div>
                     </div>
 
-                    <!-- Burnout Switch / Botón en el CRUD -->
+                    <!-- Burnout Switch -->
                     <div class="col-md-2 d-flex align-items-center">
                         <div class="form-check form-switch mt-md-4">
                             <input class="form-check-input" type="checkbox" role="switch" id="form-item-burnout" onchange="markAsDirty()">
@@ -1424,7 +1476,7 @@ function renderEditView() {
                         </div>
                     </div>
 
-                    <!-- Sistema Avanzado de Categorías -->
+                    <!-- Categorías -->
                     <div class="col-12 mt-4 border-top border-subtle-custom pt-3">
                         <label class="form-label text-secondary small fw-bold">Categorías del elemento</label>
                         
@@ -1452,7 +1504,7 @@ function renderEditView() {
             </form>
         </div>
 
-        <!-- Listado de Elementos (Estilo Tags/Grid) -->
+        <!-- Listado de Elementos (Grid) -->
         <div class="edit-cards-grid" id="items-name-list">
             ${generateEditListHTML()}
         </div>
@@ -1528,6 +1580,7 @@ function markAsDirty() {
     hasUnsavedChanges = true;
     updateSaveButtonIndicator();
 }
+
 
 function attemptOpenEditForm(index) {
     if (editingItemIndex === index) return;
@@ -1683,10 +1736,15 @@ async function saveItemChanges(event) {
         backlogData.unshift(newItemData);
     }
 
-    hasUnsavedChanges = false;
     closeEditForm();
 
-    await saveChangesToRemote();
+    // Respaldo local y cambio de estado a pendiente de remoto
+    localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
+    markAsDirty();
+
+    // Pop-up recordatorio
+    alert("⚠️ Elemento guardado localmente.\n\nRecuerda hacer clic en 'Guardar en remoto' para sincronizar los cambios en GitHub, Jefe.");
+
     navigateTo('edit');
 }
 
@@ -1705,10 +1763,13 @@ async function executeDeleteItem() {
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
 
-        hasUnsavedChanges = false;
         closeEditForm();
 
-        await saveChangesToRemote();
+        localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
+        markAsDirty();
+
+        alert("⚠️ Elemento eliminado localmente.\n\nRecuerda pulsar 'Guardar en remoto' para sincronizar con GitHub, Jefe.");
+
         navigateTo('edit');
     }
 }
@@ -1906,11 +1967,16 @@ function renderSettingsView() {
     `;
 }
 
-// Función para cambiar el valor de burnout de true a false al pulsar el icono en Configuración
+// Alternar burnout con aviso emergente
 function toggleBurnoutItem(index) {
     if (backlogData[index] !== undefined) {
         backlogData[index].burnout = !backlogData[index].burnout;
+        
+        localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
         markAsDirty();
+
+        alert("⚠️ Has cambiado el estado de Burnout.\n\nRecuerda pulsar el botón 'Guardar en remoto' para sincronizar los cambios en GitHub, Jefe.");
+
         navigateTo('settings');
     }
 }
@@ -1932,13 +1998,11 @@ function updateSaveButtonIndicator() {
     if (!saveBtn) return;
 
     if (hasUnsavedChanges) {
-        saveBtn.innerHTML = `☁️ Guardar en Remoto <span class="badge bg-warning text-dark border border-dark rounded-circle ms-1 p-1" title="Tienes cambios pendientes por guardar">●</span>`;
-        saveBtn.classList.remove("btn-outline-success");
-        saveBtn.classList.add("btn-warning", "text-dark");
+        saveBtn.innerHTML = `🚨 💾 ¡GUARDAR EN REMOTO! <span class="badge bg-danger text-white border border-light rounded-pill ms-2 px-2 py-1 fs-6 shadow">CAMBIOS PENDIENTES ⚡</span>`;
+        saveBtn.className = "btn btn-warning text-dark fw-bold btn-lg shadow-lg border-3 border-danger fs-5 px-4 py-2 text-uppercase";
     } else {
         saveBtn.innerHTML = `☁️ Guardar en Remoto`;
-        saveBtn.classList.remove("btn-warning", "text-dark");
-        saveBtn.classList.add("btn-outline-success");
+        saveBtn.className = "btn btn-outline-success fw-bold";
     }
 }
 //#endregion
