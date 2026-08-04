@@ -124,13 +124,13 @@
         ],
         "tasks": [
           {
-            "name": "Hades",
+            "name": "Stardew Valley",
             "slotCategory": "casual",
             "isMandatory": false,
             "categories": [
               "casual",
-              "roguelike",
-              "indie"
+              "indie",
+              "grindeo"
             ],
             "selected": false,
             "completed": false
@@ -149,12 +149,12 @@
             "completed": false
           },
           {
-            "name": "Vampire Survivors",
+            "name": "Monster Hunter: World",
             "slotCategory": "grindeo",
             "isMandatory": false,
             "categories": [
-              "casual",
-              "grindeo"
+              "grindeo",
+              "multiplayer"
             ],
             "selected": false,
             "completed": false
@@ -223,13 +223,12 @@
             "completed": false
           },
           {
-            "name": "Stardew Valley",
+            "name": "Monster Hunter: World",
             "slotCategory": "grindeo",
             "isMandatory": false,
             "categories": [
-              "casual",
-              "indie",
-              "grindeo"
+              "grindeo",
+              "multiplayer"
             ],
             "selected": false,
             "completed": false
@@ -273,13 +272,13 @@
         ],
         "tasks": [
           {
-            "name": "Celeste",
+            "name": "Hades",
             "slotCategory": "casual",
             "isMandatory": false,
             "categories": [
               "casual",
-              "indie",
-              "platino"
+              "roguelike",
+              "indie"
             ],
             "selected": false,
             "completed": false
@@ -298,12 +297,11 @@
             "completed": false
           },
           {
-            "name": "Stardew Valley",
+            "name": "Vampire Survivors",
             "slotCategory": "grindeo",
             "isMandatory": false,
             "categories": [
               "casual",
-              "indie",
               "grindeo"
             ],
             "selected": false,
@@ -353,13 +351,13 @@
       ],
       "tasks": [
         {
-          "name": "Hades",
+          "name": "Stardew Valley",
           "slotCategory": "casual",
           "isMandatory": false,
           "categories": [
             "casual",
-            "roguelike",
-            "indie"
+            "indie",
+            "grindeo"
           ],
           "selected": false,
           "completed": false
@@ -378,12 +376,12 @@
           "completed": false
         },
         {
-          "name": "Vampire Survivors",
+          "name": "Monster Hunter: World",
           "slotCategory": "grindeo",
           "isMandatory": false,
           "categories": [
-            "casual",
-            "grindeo"
+            "grindeo",
+            "multiplayer"
           ],
           "selected": false,
           "completed": false
@@ -452,13 +450,12 @@
           "completed": false
         },
         {
-          "name": "Stardew Valley",
+          "name": "Monster Hunter: World",
           "slotCategory": "grindeo",
           "isMandatory": false,
           "categories": [
-            "casual",
-            "indie",
-            "grindeo"
+            "grindeo",
+            "multiplayer"
           ],
           "selected": false,
           "completed": false
@@ -502,13 +499,13 @@
       ],
       "tasks": [
         {
-          "name": "Celeste",
+          "name": "Hades",
           "slotCategory": "casual",
           "isMandatory": false,
           "categories": [
             "casual",
-            "indie",
-            "platino"
+            "roguelike",
+            "indie"
           ],
           "selected": false,
           "completed": false
@@ -527,12 +524,11 @@
           "completed": false
         },
         {
-          "name": "Stardew Valley",
+          "name": "Vampire Survivors",
           "slotCategory": "grindeo",
           "isMandatory": false,
           "categories": [
             "casual",
-            "indie",
             "grindeo"
           ],
           "selected": false,
