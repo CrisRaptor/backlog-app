@@ -53,6 +53,7 @@ const DEFAULT_ACTIVE_CATEGORIES = ["casual", "focus", "grindeo"];
 document.addEventListener("DOMContentLoaded", async () => {
     await loadBacklogData();
     setupUnsavedWarning();
+    updateSaveButtonIndicator();
     navigateTo("home");
 });
 
@@ -150,6 +151,7 @@ async function saveChangesToRemote() {
 
         console.log(`✅ Guardado con éxito en remoto: ${filePath}`);
         hasUnsavedChanges = false;
+        updateSaveButtonIndicator(); // Restablece el aspecto del botón
         localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
 
         await cleanupOldRemoteBackups();
@@ -1524,6 +1526,7 @@ function filterEditList(term) {
 
 function markAsDirty() {
     hasUnsavedChanges = true;
+    updateSaveButtonIndicator();
 }
 
 function attemptOpenEditForm(index) {
@@ -1904,10 +1907,10 @@ function renderSettingsView() {
 }
 
 // Función para cambiar el valor de burnout de true a false al pulsar el icono en Configuración
-async function toggleBurnoutItem(index) {
+function toggleBurnoutItem(index) {
     if (backlogData[index] !== undefined) {
         backlogData[index].burnout = !backlogData[index].burnout;
-        await saveChangesToRemote();
+        markAsDirty();
         navigateTo('settings');
     }
 }
@@ -1922,5 +1925,20 @@ function updateGlobalGamesPerDay(val) {
 function capitalize(str) {
     if (!str) return "";
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function updateSaveButtonIndicator() {
+    const saveBtn = document.getElementById("btn-save-remote");
+    if (!saveBtn) return;
+
+    if (hasUnsavedChanges) {
+        saveBtn.innerHTML = `☁️ Guardar en Remoto <span class="badge bg-warning text-dark border border-dark rounded-circle ms-1 p-1" title="Tienes cambios pendientes por guardar">●</span>`;
+        saveBtn.classList.remove("btn-outline-success");
+        saveBtn.classList.add("btn-warning", "text-dark");
+    } else {
+        saveBtn.innerHTML = `☁️ Guardar en Remoto`;
+        saveBtn.classList.remove("btn-warning", "text-dark");
+        saveBtn.classList.add("btn-outline-success");
+    }
 }
 //#endregion
