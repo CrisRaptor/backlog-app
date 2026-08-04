@@ -1,6 +1,6 @@
 {
   "configuracion": {
-    "daysCount": 3,
+    "daysCount": 5,
     "useMandatory": true,
     "selectedCategories": [
       "casual",
@@ -92,16 +92,6 @@
       "label": "Día 1 (Martes 04/08)",
       "mandatoryTasks": [
         {
-          "name": "Elden Ring",
-          "isMandatory": true,
-          "categories": [
-            "focus",
-            "platino"
-          ],
-          "selected": true,
-          "completed": false
-        },
-        {
           "name": "The Witcher 3: Wild Hunt",
           "isMandatory": true,
           "categories": [
@@ -124,13 +114,12 @@
       ],
       "tasks": [
         {
-          "name": "Hades",
+          "name": "Vampire Survivors",
           "slotCategory": "casual",
           "isMandatory": false,
           "categories": [
             "casual",
-            "roguelike",
-            "indie"
+            "grindeo"
           ],
           "selected": true,
           "completed": false
@@ -149,11 +138,12 @@
           "completed": false
         },
         {
-          "name": "Vampire Survivors",
+          "name": "Stardew Valley",
           "slotCategory": "grindeo",
           "isMandatory": false,
           "categories": [
             "casual",
+            "indie",
             "grindeo"
           ],
           "selected": false,
@@ -166,15 +156,132 @@
       "label": "Día 2 (Miércoles 05/08)",
       "mandatoryTasks": [
         {
-          "name": "Elden Ring",
+          "name": "The Witcher 3: Wild Hunt",
           "isMandatory": true,
           "categories": [
             "focus",
-            "platino"
+            "historia"
           ],
           "selected": true,
           "completed": false
         },
+        {
+          "name": "Persona 5 Royal",
+          "isMandatory": true,
+          "categories": [
+            "focus",
+            "historia"
+          ],
+          "selected": true,
+          "completed": false
+        }
+      ],
+      "tasks": [
+        {
+          "name": "Vampire Survivors",
+          "slotCategory": "casual",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "grindeo"
+          ],
+          "selected": false,
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "slotCategory": "focus",
+          "isMandatory": false,
+          "categories": [
+            "focus",
+            "platino",
+            "indie",
+            "historia"
+          ],
+          "selected": false,
+          "completed": false
+        },
+        {
+          "name": "Monster Hunter: World",
+          "slotCategory": "grindeo",
+          "isMandatory": false,
+          "categories": [
+            "grindeo",
+            "multiplayer"
+          ],
+          "selected": true,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "label": "Día 3 (Jueves 06/08)",
+      "mandatoryTasks": [
+        {
+          "name": "The Witcher 3: Wild Hunt",
+          "isMandatory": true,
+          "categories": [
+            "focus",
+            "historia"
+          ],
+          "selected": true,
+          "completed": false
+        },
+        {
+          "name": "Persona 5 Royal",
+          "isMandatory": true,
+          "categories": [
+            "focus",
+            "historia"
+          ],
+          "selected": true,
+          "completed": false
+        }
+      ],
+      "tasks": [
+        {
+          "name": "Vampire Survivors",
+          "slotCategory": "casual",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "grindeo"
+          ],
+          "selected": false,
+          "completed": false
+        },
+        {
+          "name": "Hollow Knight",
+          "slotCategory": "focus",
+          "isMandatory": false,
+          "categories": [
+            "focus",
+            "platino",
+            "indie",
+            "historia"
+          ],
+          "selected": true,
+          "completed": false
+        },
+        {
+          "name": "Stardew Valley",
+          "slotCategory": "grindeo",
+          "isMandatory": false,
+          "categories": [
+            "casual",
+            "indie",
+            "grindeo"
+          ],
+          "selected": false,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "label": "Día 4 (Viernes 07/08)",
+      "mandatoryTasks": [
         {
           "name": "The Witcher 3: Wild Hunt",
           "isMandatory": true,
@@ -206,20 +313,18 @@
             "roguelike",
             "indie"
           ],
-          "selected": false,
+          "selected": true,
           "completed": false
         },
         {
           "name": "Hollow Knight",
           "slotCategory": "focus",
-          "isMandatory": false,
           "categories": [
             "focus",
             "platino",
             "indie",
             "historia"
           ],
-          "selected": false,
           "completed": false
         },
         {
@@ -231,25 +336,15 @@
             "indie",
             "grindeo"
           ],
-          "selected": true,
+          "selected": false,
           "completed": false
         }
       ]
     },
     {
-      "day": 3,
-      "label": "Día 3 (Jueves 06/08)",
+      "day": 5,
+      "label": "Día 5 (Sábado 08/08)",
       "mandatoryTasks": [
-        {
-          "name": "Elden Ring",
-          "isMandatory": true,
-          "categories": [
-            "focus",
-            "platino"
-          ],
-          "selected": true,
-          "completed": false
-        },
         {
           "name": "The Witcher 3: Wild Hunt",
           "isMandatory": true,
@@ -273,13 +368,13 @@
       ],
       "tasks": [
         {
-          "name": "Celeste",
+          "name": "Stardew Valley",
           "slotCategory": "casual",
           "isMandatory": false,
           "categories": [
             "casual",
             "indie",
-            "platino"
+            "grindeo"
           ],
           "selected": true,
           "completed": false
@@ -298,13 +393,12 @@
           "completed": false
         },
         {
-          "name": "Stardew Valley",
+          "name": "Monster Hunter: World",
           "slotCategory": "grindeo",
           "isMandatory": false,
           "categories": [
-            "casual",
-            "indie",
-            "grindeo"
+            "grindeo",
+            "multiplayer"
           ],
           "selected": false,
           "completed": false
@@ -313,5 +407,5 @@
     }
   ],
   "status": "accepted",
-  "accepted_at": "2026-08-04T09:46:13.419Z"
+  "accepted_at": "2026-08-04T12:08:20.871Z"
 }
