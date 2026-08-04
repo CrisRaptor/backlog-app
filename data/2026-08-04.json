@@ -6,8 +6,9 @@
       "focus",
       "platino"
     ],
-    "status": "complete",
-    "mandatory": true
+    "status": "pending",
+    "mandatory": true,
+    "burnout": true
   },
   {
     "name": "The Witcher 3: Wild Hunt",
@@ -17,7 +18,8 @@
       "historia"
     ],
     "status": "pending",
-    "mandatory": true
+    "mandatory": true,
+    "burnout": false
   },
   {
     "name": "Hollow Knight",
@@ -29,7 +31,8 @@
       "historia"
     ],
     "status": "pending",
-    "mandatory": false
+    "mandatory": false,
+    "burnout": false
   },
   {
     "name": "Stardew Valley",
@@ -40,7 +43,8 @@
       "grindeo"
     ],
     "status": "pending",
-    "mandatory": false
+    "mandatory": false,
+    "burnout": false
   },
   {
     "name": "Hades",
@@ -51,7 +55,8 @@
       "indie"
     ],
     "status": "pending",
-    "mandatory": false
+    "mandatory": false,
+    "burnout": false
   },
   {
     "name": "Monster Hunter: World",
@@ -61,7 +66,8 @@
       "multiplayer"
     ],
     "status": "pending",
-    "mandatory": false
+    "mandatory": false,
+    "burnout": false
   },
   {
     "name": "Celeste",
@@ -72,7 +78,8 @@
       "platino"
     ],
     "status": "pending",
-    "mandatory": false
+    "mandatory": false,
+    "burnout": false
   },
   {
     "name": "Persona 5 Royal",
@@ -82,7 +89,8 @@
       "historia"
     ],
     "status": "pending",
-    "mandatory": true
+    "mandatory": true,
+    "burnout": false
   },
   {
     "name": "Vampire Survivors",
@@ -92,6 +100,7 @@
       "grindeo"
     ],
     "status": "pending",
-    "mandatory": false
+    "mandatory": false,
+    "burnout": false
   }
 ]
