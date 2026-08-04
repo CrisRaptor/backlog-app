@@ -1,64 +1,75 @@
-/* #region 1. Estilos Base y Layout Principal */
+/* ==========================================================================
+   BACKLOGGER - ESTILOS UNIFICADOS (DARK THEME & BOOTSTRAP OVERRIDES)
+   ========================================================================== */
+
+/* 1. Variables Globales y Reset Dark Mode */
+:root {
+    --bg-main: #121214;
+    --bg-card: #18181c;
+    --bg-card-hover: #202026;
+    --border-color: #2d2d35;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0ab;
+    --accent-blue: #0d6efd;
+    --accent-warning: #ffc107;
+    --accent-success: #198754;
+}
+
 body {
-    background-color: #121214 !important;
-    color: #ffffff !important;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
 }
 
-/* Limitar contenedor al 80% y centrar */
-#app-content {
-    width: 80%;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
+/* 2. Contenedor Principal & Navbar */
+.app-main-container {
+    width: 85%;
+    max-width: 1400px;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
-/* #endregion */
 
-/* #region 2. Marca y Cabecera (Header) */
 .brand-title {
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: #ffffff;
-    text-decoration: none;
     cursor: pointer;
+    user-select: none;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
-.brand-title:hover {
-    color: #0d6efd;
+.border-subtle-custom {
+    border-color: var(--border-color) !important;
 }
-/* #endregion */
 
-/* #region 3. Vista - Inicio (Dashboard y Tarjetas) */
+/* 3. Tarjetas & Grid del Dashboard */
+.card-dark {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+}
+
 .home-cards-grid {
     display: grid;
-    gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
 }
 
-@media (min-width: 1200px) {
-    .home-cards-grid {
-        grid-template-columns: repeat(5, 1fr);
-    }
+.home-card {
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    border-color: var(--border-color);
 }
 
-/* Anular fondo blanco de Bootstrap en Hover */
-.home-card.btn-outline-light:hover,
-.home-card.btn-outline-light:focus {
-    background-color: #1a1a1e !important;
-    color: #ffffff !important;
-    border-color: #52525b !important;
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+.home-card:hover {
+    transform: translateY(-3px);
+    background-color: var(--bg-card-hover);
+    border-color: #444452;
 }
 
-/* Contenedor del SVG */
 .card-icon-box {
-    width: 120px;
-    height: 120px;
-    margin: 0.5rem auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .card-icon-box svg {
@@ -66,131 +77,178 @@ body {
     height: 100%;
 }
 
-/* Badges de número */
-.badge-dark-subtle {
-    background-color: #0d0d0f;
-    border: 1px solid #2d2d32;
-    padding: 0.4em 0.8em;
-    font-size: 1.1rem !important;
+/* 4. Solución a Pestañas (Nav Tabs) - Corrección de #final-tab */
+.nav-tabs {
+    border-bottom: 1px solid var(--border-color);
 }
 
-/* Subtítulos */
-.home-card p {
-    font-size: 0.95rem !important;
+.nav-tabs .nav-link {
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.card-dark {
-    background-color: #1a1a1e;
-    border: 1px solid #2d2d32;
-    border-radius: 6px;
-    color: #ffffff;
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:focus {
+    color: var(--text-primary);
+    border-color: var(--border-color) var(--border-color) transparent;
 }
 
-.card-dark:hover {
-    border-color: #3f3f46;
+/* Estado activo unificado para evitar fondo blanco y texto invisible */
+.nav-tabs .nav-link.active {
+    color: var(--accent-warning) !important;
+    background-color: var(--bg-card) !important;
+    border-color: var(--accent-warning) var(--accent-warning) var(--bg-card) !important;
 }
-/* #endregion */
 
-/* #region 4. Vista - Editar Elementos (Utilidades CRUD) */
+/* 5. Acordeones Oscuros (Corrección de conflicto Bootstrap) */
+.accordion-item {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+}
+
+.accordion-button {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #6ea8fe;
+    background-color: #1f232d;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.accordion-button::after {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* 6. Inputs, Selects y Opciones */
+.form-control,
+.form-select {
+    background-color: #121215 !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+/* Solución a las opciones de desplegables con fondo claro en OS */
+select.form-select option {
+    background-color: #18181c !important;
+    color: #ffffff !important;
+}
+
+/* 7. Badges y Tags */
+.badge-category {
+    background-color: #25252e;
+    color: #d1d1e0;
+    border: 1px solid #3b3b48;
+}
+
+.bg-dark-mandatory {
+    background-color: #2a2111;
+    border: 1px solid #5c4314;
+}
+
+.card-task-selected {
+    background-color: #0f2d1e !important;
+    border: 1px solid #198754 !important;
+}
+
+/* 8. Modales */
+.modal-content {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+}
+
 .cursor-pointer {
     cursor: pointer;
 }
 
-/* Transición suave para el panel de edición */
-#edit-form-panel {
-    transition: all 0.3s ease-in-out;
-}
-
-/* Botones en forma de tags para la lista del CRUD */
-.btn-edit-grid {
-    border: 1px solid;
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
-    transition: all 0.2s ease;
-}
-
-.btn-edit-grid:hover {
-    background-color: #25252a !important;
-    border-color: #0d6efd !important;
-}
-
-/* Ajuste de altura para contenedor vacío de categorías */
-.min-h-30 {
-    min-height: 30px;
-}
-/* #endregion */
-
-/* #region 5. Vista - Mostrar Backlog (Filtros, Badges y Estados) */
-.border-subtle-custom {
-    border-color: #2d2d32 !important;
-}
-
-.badge-category {
-    background-color: #25252a;
-    color: #a1a1aa;
-    border: 1px solid #3f3f46;
-    font-size: 0.7rem;
-}
-
-/* Botones de Filtro */
-.btn-category-filter {
-    background-color: #1a1a1e;
-    color: #a1a1aa;
-    border: 1px solid #3f3f46;
-    transition: all 0.15s ease-in-out;
-    padding: 0.2rem 0.6rem;
-    font-size: 0.8rem;
-}
-
-.btn-category-filter:hover {
-    color: #ffffff;
-    border-color: #52525b;
-}
-
-.btn-category-filter.active {
-    background-color: #0d6efd !important;
-    color: #ffffff !important;
-    border-color: #0d6efd !important;
-}
-
-/* Bordes indicativos por Estado */
-.card-status-pending {
-    border-left: 3px solid #0d6efd !important;
-}
-
-.card-status-inactive {
-    border-left: 3px solid #dc3545 !important;
-}
-
-.card-status-complete {
-    border-left: 3px solid #198754 !important;
-}
-
-/* Encabezados replegables */
 .status-header-btn {
-    text-decoration: none;
-    color: #ffffff;
+    background-color: transparent !important;
+    border: none !important;
     width: 100%;
-    text-align: left;
-    background: transparent;
-    border: none;
-    padding: 0.25rem 0;
+    padding: 0.5rem 0;
+    color: var(--text-primary);
+    cursor: pointer;
 }
 
 .status-header-btn:focus {
+    outline: none;
     box-shadow: none;
 }
-/* #endregion */
 
-/* Selección de juego: Tono verde bosque oscuro y elegante */
-.card-task-selected {
-    background-color: #11281c !important;
-    border: 1px solid #1e7e34 !important;
-    box-shadow: 0 2px 8px rgba(30, 126, 52, 0.25);
+/* ==========================================================================
+   GRID DE 8 COLUMNAS Y BOTONES DE FILTRO
+   ========================================================================== */
+
+/* Rejilla de 8 columnas exactas de igual ancho para la sección Editar */
+.edit-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.5rem;
+    width: 100%;
 }
 
-/* Tarjeta para elementos obligatorios */
-.bg-dark-mandatory {
-    background-color: #242013 !important;
-    border: 1px solid #856404 !important;
+.btn-edit-grid {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 0.375rem 0.5rem;
+}
+
+/* Adaptación progresiva para pantallas más pequeñas */
+@media (max-width: 1400px) {
+    .edit-cards-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .edit-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .edit-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Botones de filtros de categoría en la vista Backlog */
+.btn-category-filter,
+.category-filter-btn {
+    color: #d1d1e0 !important;
+    background-color: #25252e !important;
+    border: 1px solid #3b3b48 !important;
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-category-filter:hover,
+.category-filter-btn:hover {
+    background-color: #32323e !important;
+    color: #ffffff !important;
+    border-color: #4f4f60 !important;
+}
+
+.btn-category-filter.active,
+.category-filter-btn.active {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
 }
