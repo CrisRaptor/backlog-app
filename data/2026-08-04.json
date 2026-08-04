@@ -8,7 +8,7 @@
     ],
     "status": "pending",
     "mandatory": true,
-    "burnout": false
+    "burnout": true
   },
   {
     "name": "The Witcher 3: Wild Hunt",
