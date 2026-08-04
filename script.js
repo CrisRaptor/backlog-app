@@ -2,7 +2,8 @@
 let backlogData = [];
 let editingItemIndex = null;
 let selectedCategories = new Set();
-let hasUnsavedChanges = false;
+let hasUnsavedChanges = false;     // Control de cambios pendientes con el remoto (GitHub)
+let hasUnsavedFormChanges = false; // Control de cambios pendientes en el formulario activo
 let pendingSwitchIndex = null;
 let currentEditCategories = [];
 let editSearchTerm = "";
@@ -1441,19 +1442,19 @@ function renderEditView() {
                     <!-- Nombre -->
                     <div class="col-md-3">
                         <label class="form-label text-secondary small fw-bold">Nombre</label>
-                        <input type="text" id="form-item-name" class="form-control bg-dark text-light border-secondary" required placeholder="Ej: Elden Ring" oninput="markAsDirty()">
+                        <input type="text" id="form-item-name" class="form-control bg-dark text-light border-secondary" required placeholder="Ej: Elden Ring" oninput="markFormDirty()">
                     </div>
 
                     <!-- Nombre Imagen -->
                     <div class="col-md-3">
                         <label class="form-label text-secondary small fw-bold">Imagen (img_name)</label>
-                        <input type="text" id="form-item-img" class="form-control bg-dark text-light border-secondary" placeholder="Ej: elden_ring.jpg" oninput="markAsDirty()">
+                        <input type="text" id="form-item-img" class="form-control bg-dark text-light border-secondary" placeholder="Ej: elden_ring.jpg" oninput="markFormDirty()">
                     </div>
 
                     <!-- Estado -->
                     <div class="col-md-2">
                         <label class="form-label text-secondary small fw-bold">Estado</label>
-                        <select id="form-item-status" class="form-select bg-dark text-light border-secondary" required onchange="markAsDirty()">
+                        <select id="form-item-status" class="form-select bg-dark text-light border-secondary" required onchange="markFormDirty()">
                             <option value="pending">Pending</option>
                             <option value="completed">Completed</option>
                             <option value="dropped">Dropped</option>
@@ -1463,7 +1464,7 @@ function renderEditView() {
                     <!-- Mandatory Switch -->
                     <div class="col-md-2 d-flex align-items-center">
                         <div class="form-check form-switch mt-md-4">
-                            <input class="form-check-input" type="checkbox" role="switch" id="form-item-mandatory" onchange="markAsDirty()">
+                            <input class="form-check-input" type="checkbox" role="switch" id="form-item-mandatory" onchange="markFormDirty()">
                             <label class="form-check-label text-light fw-bold small" for="form-item-mandatory">Obligatorio</label>
                         </div>
                     </div>
@@ -1471,7 +1472,7 @@ function renderEditView() {
                     <!-- Burnout Switch -->
                     <div class="col-md-2 d-flex align-items-center">
                         <div class="form-check form-switch mt-md-4">
-                            <input class="form-check-input" type="checkbox" role="switch" id="form-item-burnout" onchange="markAsDirty()">
+                            <input class="form-check-input" type="checkbox" role="switch" id="form-item-burnout" onchange="markFormDirty()">
                             <label class="form-check-label text-warning fw-bold small" for="form-item-burnout">🔥 Burnout</label>
                         </div>
                     </div>
@@ -1576,16 +1577,21 @@ function filterEditList(term) {
     document.getElementById("items-name-list").innerHTML = generateEditListHTML();
 }
 
-function markAsDirty() {
+// Marca cambios en el formulario de edición activo
+function markFormDirty() {
+    hasUnsavedFormChanges = true;
+}
+
+// Marca cambios locales en el backlog pendientes de guardar en GitHub
+function markRemoteDirty() {
     hasUnsavedChanges = true;
     updateSaveButtonIndicator();
 }
 
-
 function attemptOpenEditForm(index) {
     if (editingItemIndex === index) return;
 
-    if (hasUnsavedChanges) {
+    if (hasUnsavedFormChanges) {
         pendingSwitchIndex = index;
         const unsavedModal = new bootstrap.Modal(document.getElementById('unsavedChangesModal'));
         unsavedModal.show();
@@ -1595,7 +1601,7 @@ function attemptOpenEditForm(index) {
 }
 
 function attemptCloseEditForm() {
-    if (hasUnsavedChanges) {
+    if (hasUnsavedFormChanges) {
         pendingSwitchIndex = "CLOSE";
         const unsavedModal = new bootstrap.Modal(document.getElementById('unsavedChangesModal'));
         unsavedModal.show();
@@ -1609,7 +1615,7 @@ function forceSwitchItem() {
     const modalInstance = bootstrap.Modal.getInstance(modalEl);
     if (modalInstance) modalInstance.hide();
 
-    hasUnsavedChanges = false;
+    hasUnsavedFormChanges = false;
 
     if (pendingSwitchIndex === "CLOSE") {
         closeEditForm();
@@ -1620,7 +1626,7 @@ function forceSwitchItem() {
 
 function openEditForm(index) {
     editingItemIndex = index;
-    hasUnsavedChanges = false;
+    hasUnsavedFormChanges = false;
     currentEditCategories = [];
 
     const panel = document.getElementById("edit-form-panel");
@@ -1662,7 +1668,7 @@ function handleCategoryEnter(event) {
 
         if (newCat && !currentEditCategories.includes(newCat)) {
             currentEditCategories.push(newCat);
-            markAsDirty();
+            markFormDirty();
             renderCategoriesInteractive();
         }
         input.value = "";
@@ -1671,14 +1677,14 @@ function handleCategoryEnter(event) {
 
 function removeEditCategory(cat) {
     currentEditCategories = currentEditCategories.filter(c => c !== cat);
-    markAsDirty();
+    markFormDirty();
     renderCategoriesInteractive();
 }
 
 function addSuggestedCategory(cat) {
     if (!currentEditCategories.includes(cat)) {
         currentEditCategories.push(cat);
-        markAsDirty();
+        markFormDirty();
         renderCategoriesInteractive();
     }
 }
@@ -1707,7 +1713,7 @@ function renderCategoriesInteractive() {
 
 function closeEditForm() {
     editingItemIndex = null;
-    hasUnsavedChanges = false;
+    hasUnsavedFormChanges = false;
     document.getElementById("edit-form-panel").classList.add("d-none");
     document.getElementById("items-name-list").innerHTML = generateEditListHTML();
 }
@@ -1740,7 +1746,7 @@ async function saveItemChanges(event) {
 
     // Respaldo local y cambio de estado a pendiente de remoto
     localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
-    markAsDirty();
+    markRemoteDirty();
 
     // Pop-up recordatorio
     alert("⚠️ Elemento guardado localmente.\n\nRecuerda hacer clic en 'Guardar en remoto' para sincronizar los cambios en GitHub, Jefe.");
@@ -1766,7 +1772,7 @@ async function executeDeleteItem() {
         closeEditForm();
 
         localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
-        markAsDirty();
+        markRemoteDirty();
 
         alert("⚠️ Elemento eliminado localmente.\n\nRecuerda pulsar 'Guardar en remoto' para sincronizar con GitHub, Jefe.");
 
@@ -1973,7 +1979,7 @@ function toggleBurnoutItem(index) {
         backlogData[index].burnout = !backlogData[index].burnout;
         
         localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
-        markAsDirty();
+        markRemoteDirty();
 
         alert("⚠️ Has cambiado el estado de Burnout.\n\nRecuerda pulsar el botón 'Guardar en remoto' para sincronizar los cambios en GitHub, Jefe.");
 
