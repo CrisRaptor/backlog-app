@@ -1,4 +1,3 @@
-/*
 ================================================================================
   BACKLOGGER - DOCUMENTACIÓN Y ESPECIFICACIONES TÉCNICAS
 ================================================================================
@@ -9,20 +8,19 @@
 --------------------------------------------------------------------------------
   1. ESTRUCTURA DE ARCHIVOS Y RUTAS
 --------------------------------------------------------------------------------
-  - / (Raíz)          -> backlog.json (Juegos/libros principales)
+  - / (Raíz)          -> index.html (Punto de entrada SPA)
   - /quests/         -> [quest_id].json (Archivos de misiones activas y guardadas)
-  - /history/        -> history.json (Histórico general de elecciones y métricas)
-  - /oldbackups/     -> [YYYY-MM-DD]_backup.json (Backups automáticos diarios)
+  - /history/        -> history.json (Histórico general de elecciones, estados y métricas)
 
 --------------------------------------------------------------------------------
-  2. ESQUEMA DEL JSON DE ELEMENTOS (Atributos requeridos)
+  2. ESQUEMA DEL JSON DE ELEMENTOS (Atributos del Backlog)
 --------------------------------------------------------------------------------
   {
-    "name": "Elden Ring",
-    "img_name": "elden_ring.jpg",
-    "categories": ["focus", "platino"],
-    "status": "pending", // p.ej: 'pending', 'completed', 'dropped'
-    "mandatory": true
+    "name": "Elden Ring",             // Título del juego/libro
+    "categories": ["focus", "platino"], // Etiquetas/categorías asociadas
+    "status": "pending",              // Estado: 'pending', 'in_progress', 'completed', 'dropped'
+    "mandatory": true,                // Indicador de selección prioritaria en misiones
+    "burnout": false                // Apartado que excluye el juego de usarse
   }
 
 --------------------------------------------------------------------------------
@@ -33,46 +31,40 @@
 
   - VISTA "INICIO" (Dashboard principal con botones de acceso rápido):
     [1] Start new quest    -> Generador de misiones (Content Roll paso a paso):
-                              a. Ajuste de la pool de X días.
-                              b. Selección de categorías disponibles en los datos.
-                              c. Filtro opcional para incluir obligatorios (mandatory).
-                              d. Generación: Elección de 1-X ítems por categoría y día.
-                              e. Guardar resultado en /quests/ y registro en /history/.
-                              f. Renderizado del "Tracker" diario con checkboxes por tarea.
-    [2] Quests             -> Visualizar la quest activa + Histórico de quests anteriores.
-    [3] Editar elementos   -> Formulario CRUD (Añadir, borrar, modificar backlog).
-    [4] Mostrar backlog    -> Vista general del inventario de juegos/libros.
-    [5] Configuración      -> Opciones generales + Módulo de ajuste de "Burnout" (cooldowns/desgaste).
+                              a. Configuración del periodo de la misión (duración en días).
+                              b. Filtro y selección activa de categorías a incluir.
+                              c. Selector de regla de balanceo para elementos obligatorios (mandatory).
+                              d. Ejecución del algoritmo de mezcla (Roll) según prioridades y desgastes.
+                              e. Generación del archivo JSON de la quest y registro automático en /history/.
+                              f. Carga inmediata del Tracker activo con seguimiento diario y casillas de verificación.
+
+    [2] Quests             -> Gestión de Misiones:
+                              a. Vista de Quest Activa con indicador de progreso diario y checklist.
+                              b. Histórico navegable de misiones pasadas ordenadas por fecha.
+                              c. Detalle de métricas individuales de tasa de cumplimiento por quest.
+
+    [3] Editar elementos   -> Formulario y Gestión CRUD:
+                              a. Altas de nuevos elementos mediante formulario validado.
+                              b. Modificación en lote o individual de datos (categorías, estado, mandatory).
+                              c. Eliminación física/lógica de elementos del backlog.
+                              d. Opción de importación y exportación directa de backlog.json.
+
+    [4] Mostrar backlog    -> Vista general del Inventario:
+                              a. Cuadrícula / Lista visual de portadas e información básica.
+                              b. Buscador por texto libre y filtros combinados por categoría y estado.
+                              c. Ordenación configurable (por prioridad, fecha de añadido, nombre).
+                              d. Módulo de vista detallada en modal con historial del elemento.
+
+    [5] Configuración      -> Parámetros de Aplicación:
+                              a. Configuración global del algoritmo de selección de quests.
+                              b. Módulo de Burnout: ajuste de reglas de desgaste, cooldowns e intervalos.
+                              c. Opciones de gestión de almacenamiento local y sincronización.
+                              d. Preferencias visuales y modo compacto.
 
 --------------------------------------------------------------------------------
   4. LÓGICA DE BACKUPS Y MANTENIMIENTO
 --------------------------------------------------------------------------------
-  - Al iniciar la aplicación:
-    1. Verifica si existe backup del día anterior en la raíz.
-    2. Si no existe, genera la copia del backlog actual.
-    3. Mueve los backups que no correspondan al día de ayer a la carpeta 'oldbackups'.
+  - Gestión de datos y persistencia:
+    1. Generación de respaldos de `backlog.json` en memoria/local storage al realizar modificaciones CRUD.
+    2. Exportación manual descargable de copias de seguridad de datos completos (`backlog`, `quests` e `history`).
 ================================================================================
-*/
-
-/* Posibles implementaciones futuras 
-NO TENER EN CUENTA DURANTE EL DESARROLLO EXCEPTO MENCIÓN DIRECTA
-
-1. Cargar un "data" antiguo de remoto
-   - Descripción: Recuperar y decodificar en memoria un archivo JSON de respaldo previo alojado en el repositorio de GitHub.
-   - Complejidad: Muy Baja (1/5)
-
-2. Visualización remota (Listado y Contenido)
-   - Descripción: Explorador de respaldos para listar los archivos disponibles en el directorio remoto y consultar su contenido estructurado.
-   - Complejidad: Baja (2/5)
-
-3. Guardado múltiple el mismo día con sufijos
-   - Descripción: Permitir múltiples respaldos en la misma fecha incorporando un timestamp o identificador único al nombre del archivo (ej. YYYY-MM-DD_HHmmss.json).
-   - Complejidad: Baja (2/5)
-
-4. Retención y purga selectiva de backups
-   - Descripción: Depuración de archivos remotos con más de 7 días de antigüedad, preservando de forma inmune el respaldo más antiguo de cada mes (día 1 o menor).
-   - Complejidad: Media (3.5/5)
-
-5. Apartado de Daylist
-   - Descripción: Sección con elementos especiales "daily" donde activar o desactivar cada una, estas "daily" se añaden a las quest en un apartado separado
-*/

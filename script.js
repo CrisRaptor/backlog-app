@@ -1,4 +1,5 @@
 //#region 1. Estado Global, Constantes y SVG
+
 let backlogData = [];
 let editingItemIndex = null;
 let selectedCategories = new Set();
@@ -41,15 +42,19 @@ let appSettings = JSON.parse(localStorage.getItem("app_settings")) || {
     gamesPerDayValid: 1
 };
 
+// Guarda la configuración global de la aplicación en localStorage
 function saveAppSettings() {
     localStorage.setItem("app_settings", JSON.stringify(appSettings));
 }
 
 // Categorías con cuota por defecto = 1
 const DEFAULT_ACTIVE_CATEGORIES = ["casual", "focus", "grindeo"];
+
 //#endregion
 
 //#region 2. Inicialización y Carga de Datos
+
+// Inicializador de la aplicación al cargar el DOM
 document.addEventListener("DOMContentLoaded", async () => {
     await loadBacklogData();
     setupUnsavedWarning();
@@ -57,6 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     navigateTo("home");
 });
 
+// Carga los datos del backlog desde GitHub Remote, con fallback a localStorage y data.json
 async function loadBacklogData() {
     try {
         if (!GITHUB_CONFIG.token) {
@@ -64,6 +70,7 @@ async function loadBacklogData() {
         }
         console.log("Intentando obtener datos desde GitHub Remote...");
 
+        // Petición para obtener el listado de archivos en /data
         const response = await fetch(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.folder}`,
             { headers: { Authorization: `token ${GITHUB_CONFIG.token}` } }
@@ -73,6 +80,7 @@ async function loadBacklogData() {
 
         const files = await response.json();
 
+        // Ordenar archivos .json para obtener la última versión por fecha
         const jsonFiles = files
             .filter(f => f.name.endsWith(".json"))
             .sort((a, b) => b.name.localeCompare(a.name));
@@ -83,7 +91,7 @@ async function loadBacklogData() {
         const dataResponse = await fetch(latestFile.download_url);
         backlogData = await dataResponse.json();
 
-        // Asegurar que todos los elementos tengan el atributo burnout por defecto si no lo tienen
+        // Garantizar que todos los elementos tengan definida la propiedad burnout
         backlogData.forEach(item => {
             if (item.burnout === undefined) item.burnout = false;
         });
@@ -95,6 +103,7 @@ async function loadBacklogData() {
         console.warn("⚠️ ERROR DE CONEXIÓN REMOTA CON GITHUB:", error.message);
         console.log("🔄 Buscando respaldo más reciente en local...");
 
+        // Proceso de recuperación si falla la API remota
         const localBackup = localStorage.getItem("local_backup_data");
         if (localBackup) {
             backlogData = JSON.parse(localBackup);
@@ -110,9 +119,12 @@ async function loadBacklogData() {
         }
     }
 }
+
 //#endregion
 
 //#region 3. Persistencia Remota y Limpieza (GitHub API)
+
+// Guarda los datos actualizados del backlog en el repositorio de GitHub y limpia backups antiguos
 async function saveChangesToRemote() {
     const todayStr = new Date().toISOString().split("T")[0];
     const fileName = `${todayStr}.json`;
@@ -122,6 +134,7 @@ async function saveChangesToRemote() {
 
     try {
         let sha = null;
+        // Verificar si el archivo ya existe hoy para obtener su SHA de actualización
         const checkFile = await fetch(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${filePath}`,
             { headers: { Authorization: `token ${GITHUB_CONFIG.token}` } }
@@ -151,7 +164,7 @@ async function saveChangesToRemote() {
 
         console.log(`✅ Guardado con éxito en remoto: ${filePath}`);
         hasUnsavedChanges = false;
-        updateSaveButtonIndicator(); // Restablece el aspecto del botón
+        updateSaveButtonIndicator();
         localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
 
         await cleanupOldRemoteBackups();
@@ -164,6 +177,7 @@ async function saveChangesToRemote() {
     }
 }
 
+// Mantiene solo los últimos 7 archivos de respaldo de backlog en la carpeta /data del repositorio
 async function cleanupOldRemoteBackups() {
     try {
         const response = await fetch(
@@ -177,6 +191,7 @@ async function cleanupOldRemoteBackups() {
             .filter(f => f.name.endsWith(".json"))
             .sort((a, b) => b.name.localeCompare(a.name));
 
+        // Si hay más de 7 copias de seguridad, eliminar las sobrantes más antiguas
         if (jsonFiles.length > 7) {
             const filesToDelete = jsonFiles.slice(7);
 
@@ -202,9 +217,12 @@ async function cleanupOldRemoteBackups() {
         console.warn("No se pudo completar la limpieza de respaldos antiguos:", error);
     }
 }
+
 //#endregion
 
 //#region 4. Control de Eventos de Salida y Auto-Guardado
+
+// Configura eventos del navegador para prevenir la pérdida de cambios sin guardar al cerrar o cambiar de pestaña
 function setupUnsavedWarning() {
     window.addEventListener("beforeunload", (event) => {
         if (hasUnsavedChanges) {
@@ -221,6 +239,7 @@ function setupUnsavedWarning() {
     });
 }
 
+// Ejecuta un guardado automático silencioso en GitHub cuando el usuario abandona la página con cambios pendientes
 async function autoSaveOnLeave() {
     if (!hasUnsavedChanges) return;
 
@@ -269,9 +288,12 @@ async function autoSaveOnLeave() {
         console.warn("⚠️ No se pudo completar el auto-guardado remoto al salir:", error);
     }
 }
+
 //#endregion
 
 //#region 5. Navegación y Enrutador SPA
+
+// Renderiza la vista SPA solicitada según el identificador recibido
 async function navigateTo(viewName) {
     const container = document.getElementById("app-content");
     if (!container) return;
@@ -299,9 +321,12 @@ async function navigateTo(viewName) {
             container.innerHTML = renderHomeView();
     }
 }
+
 //#endregion
 
 //#region 6. Vista - Inicio (Dashboard)
+
+// Devuelve la plantilla HTML del panel principal (Dashboard)
 function renderHomeView() {
     return `
         <h1 class="h3 mb-4 text-light fw-bold text-center">Panel Principal</h1>
@@ -385,12 +410,15 @@ function renderHomeView() {
         </div>
     `;
 }
+
 //#endregion
 
 //#region 7. Vista - Quests y Seguimiento
+
 let loadedQuestsList = [];
 let activeViewQuestIndex = null;
 
+// Carga y renderiza el panel general de quests o la vista detallada de una quest seleccionada
 async function renderQuestsView() {
     const container = document.getElementById("app-content");
 
@@ -411,9 +439,11 @@ async function renderQuestsView() {
     return renderQuestsMainDashboard();
 }
 
+// Carga la lista de quests disponibles combinando archivos remotos de GitHub y respaldos en localStorage
 async function fetchAllQuests() {
     loadedQuestsList = [];
 
+    // Carga de quests remotas desde el directorio /quests/
     try {
         const response = await fetch(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/quests`,
@@ -440,6 +470,7 @@ async function fetchAllQuests() {
         console.warn("No se pudo conectar con el directorio /quests/ de GitHub:", error);
     }
 
+    // Incorporar quests guardadas localmente que no existan en remoto
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && key.startsWith("quests_")) {
@@ -453,6 +484,7 @@ async function fetchAllQuests() {
         }
     }
 
+    // Ordenar descendentemente por fecha de inicio
     loadedQuestsList.sort((a, b) => {
         const startA = a.date_range?.start || "";
         const startB = b.date_range?.start || "";
@@ -460,6 +492,7 @@ async function fetchAllQuests() {
     });
 }
 
+// Renderiza el panel con la quest activa actual y el historial completo de quests
 function renderQuestsMainDashboard() {
     const todayStr = new Date().toISOString().split("T")[0];
 
@@ -555,22 +588,26 @@ function renderQuestsMainDashboard() {
     `;
 }
 
+// Recarga el listado completo de quests desde las fuentes de datos
 async function refreshQuestsList() {
     loadedQuestsList = [];
     activeViewQuestIndex = null;
     navigateTo('quests');
 }
 
+// Muestra el detalle completo de una quest en particular según su índice
 function openQuestDetail(index) {
     activeViewQuestIndex = index;
     navigateTo('quests');
 }
 
+// Cierra la vista de detalle y regresa al listado general de quests
 function closeQuestDetail() {
     activeViewQuestIndex = null;
     navigateTo('quests');
 }
 
+// Devuelve la plantilla HTML con los detalles y días de una quest específica
 function renderQuestDetailView(quest) {
     return `
         <div class="d-flex justify-content-between align-items-start mb-4 bg-dark p-3 rounded border border-subtle-custom position-relative">
@@ -655,6 +692,7 @@ function renderQuestDetailView(quest) {
     `;
 }
 
+// Obtiene y muestra en un modal el historial técnico (inicial y final) asignado a una quest
 async function inspectQuestHistory(startDateStr) {
     if (!startDateStr) {
         alert("No se pudo identificar la fecha de inicio para buscar los archivos de historial, Jefe.");
@@ -671,6 +709,7 @@ async function inspectQuestHistory(startDateStr) {
     let initialData = null;
     let finalData = null;
 
+    // Intentar descarga remota de history final
     try {
         const resFinal = await fetch(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/history/${finalFileName}`,
@@ -682,6 +721,7 @@ async function inspectQuestHistory(startDateStr) {
         }
     } catch (e) {}
 
+    // Intentar descarga remota de history inicial
     try {
         const resInit = await fetch(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/history/${initialFileName}`,
@@ -693,6 +733,7 @@ async function inspectQuestHistory(startDateStr) {
         }
     } catch (e) {}
 
+    // Fallback a localStorage si fallan los remotos
     if (!finalData) {
         const localFinal = localStorage.getItem(`history_history/${finalFileName}`) || localStorage.getItem(`history_${finalFileName}`);
         if (localFinal) finalData = JSON.parse(localFinal);
@@ -745,9 +786,11 @@ async function inspectQuestHistory(startDateStr) {
         </div>
     `;
 }
+
 //#endregion
 
 //#region 8. Vista - Start New Quest
+
 const savedQuestConfig = JSON.parse(localStorage.getItem("quest_last_config")) || {};
 
 let newQuestState = {
@@ -762,6 +805,7 @@ let newQuestState = {
     visitedDays: new Set()
 };
 
+// Guarda en localStorage los últimos parámetros utilizados al configurar una quest
 function saveQuestConfig() {
     const configToSave = {
         daysCount: newQuestState.daysCount,
@@ -773,12 +817,14 @@ function saveQuestConfig() {
     localStorage.setItem("quest_last_config", JSON.stringify(configToSave));
 }
 
+// Actualiza la meta diaria de juegos válidos garantizando un valor mínimo de 1
 function updateQuestGamesPerDayValid(val) {
     newQuestState.gamesPerDayValid = Math.max(1, parseInt(val, 10) || 1);
 }
 
 const WEEKDAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
+// Controla el flujo de creación de quests alternando entre el paso de configuración y el de revisión
 function renderNewQuestView() {
     if (newQuestState.step === 'configure') {
         return renderConfigureQuestStep();
@@ -787,6 +833,7 @@ function renderNewQuestView() {
     }
 }
 
+// Genera el formulario de configuración inicial para una nueva quest
 function renderConfigureQuestStep() {
     const availableCategories = Array.from(
         new Set(backlogData.flatMap(item => item.categories || []))
@@ -872,7 +919,7 @@ function renderConfigureQuestStep() {
     `;
 }
 
-// Generación de Quest excluyendo elementos con burnout === true
+// Procesa las reglas, categorías y cuotas para seleccionar aleatoriamente los juegos de cada día
 async function generateQuest() {
     if (newQuestState.selectedCategories.length === 0) {
         alert("Por favor, selecciona al menos una categoría para poder generar la quest, Jefe.");
@@ -880,11 +927,12 @@ async function generateQuest() {
     }
 
     saveQuestConfig();
-
     const todayStr = new Date().toISOString().split("T")[0];
 
+    // Filtrar elementos obligatorios que no estén completados ni en burnout
     const mandatoryGames = backlogData.filter(g => g.mandatory && g.status !== "completed" && !g.burnout);
 
+    // Filtrar resto de candidatos válidos
     const eligibleGames = backlogData.filter(item => {
         const matchesCategory = item.categories && item.categories.some(c => newQuestState.selectedCategories.includes(c));
         if (newQuestState.useMandatory && item.mandatory) return false;
@@ -893,6 +941,7 @@ async function generateQuest() {
 
     newQuestState.generatedDays = [];
 
+    // Generar la lista de opciones día a día respetando las cuotas
     for (let i = 0; i < newQuestState.daysCount; i++) {
         const dayLabel = getDayLabel(i);
         const dayLimits = newQuestState.dayConfigs[dayLabel] || {};
@@ -914,13 +963,7 @@ async function generateQuest() {
 
         newQuestState.selectedCategories.forEach(cat => {
             const rawQuota = dayLimits[cat];
-            let limit = 0;
-
-            if (rawQuota === "any") {
-                limit = 999;
-            } else {
-                limit = parseInt(rawQuota, 10) || 0;
-            }
+            let limit = (rawQuota === "any") ? 999 : (parseInt(rawQuota, 10) || 0);
 
             if (limit <= 0) return;
 
@@ -955,6 +998,7 @@ async function generateQuest() {
         });
     }
 
+    // Registro inicial en el archivo de historial
     const initialHistoryPayload = {
         configuracion: { ...newQuestState },
         opciones: newQuestState.generatedDays
@@ -970,6 +1014,7 @@ async function generateQuest() {
     navigateTo('newQuest');
 }
 
+// Muestra la interfaz interactiva para revisar y seleccionar los juegos diarios de la quest generada
 function renderReviewQuestStep() {
     const isQuestReady = areAllDaysValid();
     const validDaysCount = newQuestState.generatedDays.filter(d => isDayValid(d)).length;
@@ -1040,6 +1085,7 @@ function renderReviewQuestStep() {
     `;
 }
 
+// Retorna un mapa con el juego seleccionado y el día en el que fue asignado
 function getSelectedGamesMap() {
     const map = new Map();
     newQuestState.generatedDays.forEach((dayData, dIdx) => {
@@ -1052,12 +1098,12 @@ function getSelectedGamesMap() {
     return map;
 }
 
+// Renderiza la lista de juegos obligatorios y opcionales asignados al día activo
 function renderDayTasksList(dayData) {
     if (!dayData) return '';
 
     const selectedMap = getSelectedGamesMap();
     const currentDayNum = newQuestState.activeDayIndex + 1;
-
     let html = '';
 
     if (newQuestState.useMandatory && dayData.mandatoryTasks && dayData.mandatoryTasks.length > 0) {
@@ -1136,6 +1182,7 @@ function renderDayTasksList(dayData) {
     return html;
 }
 
+// Alterna la selección de un juego en un día específico validando colisiones con otros días
 function toggleTaskSelection(dayIdx, taskIdx) {
     const day = newQuestState.generatedDays[dayIdx];
     if (!day || !day.tasks[taskIdx]) return;
@@ -1153,10 +1200,10 @@ function toggleTaskSelection(dayIdx, taskIdx) {
     navigateTo('newQuest');
 }
 
+// Reemplaza un juego aleatoriamente por otro elegible del backlog dentro de la misma categoría
 function swapGameForTask(dayIdx, taskIdx, slotCategory) {
     const dayData = newQuestState.generatedDays[dayIdx];
     const currentTask = dayData.tasks[taskIdx];
-
     const gamesToday = new Set(dayData.tasks.map(t => t.name));
 
     const eligiblePool = backlogData.filter(g => {
@@ -1185,17 +1232,20 @@ function swapGameForTask(dayIdx, taskIdx, slotCategory) {
     navigateTo('newQuest');
 }
 
+// Cambia el día activo en la pantalla de revisión de la quest
 function selectReviewDay(idx) {
     newQuestState.activeDayIndex = idx;
     newQuestState.visitedDays.add(idx);
     navigateTo('newQuest');
 }
 
+// Vuelve a la pantalla inicial de configuración manteniendo los parámetros
 function resetToConfigure() {
     newQuestState.step = 'configure';
     navigateTo('newQuest');
 }
 
+// Valida la completitud de la revisión y guarda la quest definitiva e historial en remoto/local
 async function acceptAndGenerateQuest() {
     if (newQuestState.visitedDays.size < newQuestState.daysCount) {
         alert("Debes elegir/revisar cada día de la quest antes de finalizar la selección, Jefe.");
@@ -1247,6 +1297,7 @@ async function acceptAndGenerateQuest() {
     navigateTo('quests');
 }
 
+// Envía o actualiza un archivo JSON en el repositorio de GitHub mediante API REST
 async function commitJsonFile(filePath, payload, commitMessage) {
     const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
 
@@ -1286,6 +1337,7 @@ async function commitJsonFile(filePath, payload, commitMessage) {
     }
 }
 
+// Sincroniza la estructura de cuotas por categoría para todos los días de la quest
 function syncDayConfigs(availableCategories) {
     for (let i = 0; i < newQuestState.daysCount; i++) {
         const dayLabel = getDayLabel(i);
@@ -1301,6 +1353,7 @@ function syncDayConfigs(availableCategories) {
     }
 }
 
+// Calcula la etiqueta de fecha y día de la semana para un índice de día determinado
 function getDayLabel(index) {
     const today = new Date();
     const todayWeekdayIndex = (today.getDay() + 6) % 7; 
@@ -1315,6 +1368,7 @@ function getDayLabel(index) {
     return `Día ${index + 1} (${dayName} ${dayOfMonth}/${month})`;
 }
 
+// Actualiza el total de días de la quest permitiendo un rango de 1 a 14
 function updateQuestDays(value) {
     const days = parseInt(value, 10);
     if (days >= 1 && days <= 14) {
@@ -1323,10 +1377,12 @@ function updateQuestDays(value) {
     }
 }
 
+// Activa o desactiva la inclusión de tareas obligatorias en la quest
 function toggleQuestMandatory(checked) {
     newQuestState.useMandatory = checked;
 }
 
+// Añade o remueve una categoría del listado activo para la quest
 function toggleQuestCategory(cat) {
     if (newQuestState.selectedCategories.includes(cat)) {
         newQuestState.selectedCategories = newQuestState.selectedCategories.filter(c => c !== cat);
@@ -1336,6 +1392,7 @@ function toggleQuestCategory(cat) {
     navigateTo('newQuest');
 }
 
+// Construye el acordeón interactivo para definir la cuota de juegos por categoría para cada día
 function renderDailyScheduleAccordion() {
     let html = "";
     for (let i = 0; i < newQuestState.daysCount; i++) {
@@ -1385,6 +1442,7 @@ function renderDailyScheduleAccordion() {
     return html;
 }
 
+// Modifica la cuota permitida para una categoría en un día determinado
 function updateCategoryQuota(dayLabel, category, value) {
     if (!newQuestState.dayConfigs[dayLabel]) {
         newQuestState.dayConfigs[dayLabel] = {};
@@ -1392,6 +1450,7 @@ function updateCategoryQuota(dayLabel, category, value) {
     newQuestState.dayConfigs[dayLabel][category] = value === "any" ? "any" : parseInt(value, 10);
 }
 
+// Copia la configuración de cuotas de un día a todos los demás días de la quest
 function applyDayToAll(sourceDayLabel) {
     const sourceConfig = { ...newQuestState.dayConfigs[sourceDayLabel] };
     for (let i = 0; i < newQuestState.daysCount; i++) {
@@ -1402,19 +1461,24 @@ function applyDayToAll(sourceDayLabel) {
     alert(`¡Configuración de ${sourceDayLabel} duplicada en todos los días!`);
 }
 
+// Comprueba si un día cumple con la meta requerida de juegos seleccionados
 function isDayValid(dayData) {
     if (!dayData || !dayData.tasks) return false;
     const selectedCount = dayData.tasks.filter(t => t.selected).length;
     return selectedCount === newQuestState.gamesPerDayValid;
 }
 
+// Revisa si todos los días generados en la quest cumplen las condiciones de validación
 function areAllDaysValid() {
     if (!newQuestState.generatedDays || newQuestState.generatedDays.length === 0) return false;
     return newQuestState.generatedDays.every(day => isDayValid(day));
 }
+
 //#endregion
 
 //#region 9. Vista - Gestión y CRUD de Elementos
+
+// Renderiza la interfaz de gestión CRUD con el buscador, formulario y listado de elementos
 function renderEditView() {
     return `
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1550,6 +1614,7 @@ function renderEditView() {
     `;
 }
 
+// Genera la rejilla de botones con todos los elementos del backlog filtrados y ordenados
 function generateEditListHTML() {
     const term = editSearchTerm.toLowerCase();
 
@@ -1572,22 +1637,24 @@ function generateEditListHTML() {
     }).join('');
 }
 
+// Actualiza la búsqueda en tiempo real del listado de elementos para edición
 function filterEditList(term) {
     editSearchTerm = term;
     document.getElementById("items-name-list").innerHTML = generateEditListHTML();
 }
 
-// Marca cambios en el formulario de edición activo
+// Marca el formulario actual como modificado para evitar cierres accidentales
 function markFormDirty() {
     hasUnsavedFormChanges = true;
 }
 
-// Marca cambios locales en el backlog pendientes de guardar en GitHub
+// Activa el indicador de cambios locales pendientes de guardar en remoto
 function markRemoteDirty() {
     hasUnsavedChanges = true;
     updateSaveButtonIndicator();
 }
 
+// Intenta abrir el formulario de edición comprobando primero si hay cambios sin guardar
 function attemptOpenEditForm(index) {
     if (editingItemIndex === index) return;
 
@@ -1600,6 +1667,7 @@ function attemptOpenEditForm(index) {
     }
 }
 
+// Intenta cerrar el formulario comprobando si existen datos pendientes de guardar
 function attemptCloseEditForm() {
     if (hasUnsavedFormChanges) {
         pendingSwitchIndex = "CLOSE";
@@ -1610,6 +1678,7 @@ function attemptCloseEditForm() {
     }
 }
 
+// Ignora los cambios pendientes del formulario y realiza la acción de cambio o cierre
 function forceSwitchItem() {
     const modalEl = document.getElementById('unsavedChangesModal');
     const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -1624,6 +1693,7 @@ function forceSwitchItem() {
     }
 }
 
+// Carga los datos de un elemento en el formulario superior para edición o creación
 function openEditForm(index) {
     editingItemIndex = index;
     hasUnsavedFormChanges = false;
@@ -1634,7 +1704,6 @@ function openEditForm(index) {
     const deleteBtn = document.getElementById("btn-delete-item");
 
     panel.classList.remove("d-none");
-
     document.getElementById("items-name-list").innerHTML = generateEditListHTML();
 
     if (index !== null && backlogData[index]) {
@@ -1660,6 +1729,7 @@ function openEditForm(index) {
     panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// Agrega una nueva categoría personalizada al pulsar la tecla Enter en el input
 function handleCategoryEnter(event) {
     if (event.key === 'Enter') {
         event.preventDefault();
@@ -1675,12 +1745,14 @@ function handleCategoryEnter(event) {
     }
 }
 
+// Remueve una categoría asignada al elemento en edición
 function removeEditCategory(cat) {
     currentEditCategories = currentEditCategories.filter(c => c !== cat);
     markFormDirty();
     renderCategoriesInteractive();
 }
 
+// Añade una categoría existente desde las sugerencias al elemento en edición
 function addSuggestedCategory(cat) {
     if (!currentEditCategories.includes(cat)) {
         currentEditCategories.push(cat);
@@ -1689,6 +1761,7 @@ function addSuggestedCategory(cat) {
     }
 }
 
+// Renderiza los badges de categorías actuales y las sugerencias disponibles en el formulario
 function renderCategoriesInteractive() {
     const allUniqueCategories = Array.from(new Set(backlogData.flatMap(item => item.categories || []))).sort();
 
@@ -1711,6 +1784,7 @@ function renderCategoriesInteractive() {
         : `<span class="text-secondary small fst-italic">No hay más sugerencias disponibles</span>`;
 }
 
+// Oculta el panel del formulario de edición y restablece el estado de edición
 function closeEditForm() {
     editingItemIndex = null;
     hasUnsavedFormChanges = false;
@@ -1718,6 +1792,7 @@ function closeEditForm() {
     document.getElementById("items-name-list").innerHTML = generateEditListHTML();
 }
 
+// Procesa y guarda los cambios de un elemento (nuevo o editado) en el backlog local
 async function saveItemChanges(event) {
     event.preventDefault();
 
@@ -1744,16 +1819,15 @@ async function saveItemChanges(event) {
 
     closeEditForm();
 
-    // Respaldo local y cambio de estado a pendiente de remoto
+    // Actualizar almacenamiento local y marcar estado pendiente de remoto
     localStorage.setItem("local_backup_data", JSON.stringify(backlogData));
     markRemoteDirty();
 
-    // Pop-up recordatorio
     alert("⚠️ Elemento guardado localmente.\n\nRecuerda hacer clic en 'Guardar en remoto' para sincronizar los cambios en GitHub, Jefe.");
-
     navigateTo('edit');
 }
 
+// Abre el modal emergente para confirmar la eliminación de un elemento
 function confirmDeleteItem() {
     if (editingItemIndex === null) return;
     const item = backlogData[editingItemIndex];
@@ -1762,6 +1836,7 @@ function confirmDeleteItem() {
     deleteModal.show();
 }
 
+// Elimina definitivamente el elemento del backlog local y actualiza los indicadores
 async function executeDeleteItem() {
     if (editingItemIndex !== null) {
         backlogData.splice(editingItemIndex, 1);
@@ -1775,13 +1850,15 @@ async function executeDeleteItem() {
         markRemoteDirty();
 
         alert("⚠️ Elemento eliminado localmente.\n\nRecuerda pulsar 'Guardar en remoto' para sincronizar con GitHub, Jefe.");
-
         navigateTo('edit');
     }
 }
+
 //#endregion
 
 //#region 10. Vista - Visualizador de Backlog
+
+// Renderiza el visualizador completo del backlog organizado por estados y categorías
 function renderBacklogView() {
     const allCategories = Array.from(
         new Set(backlogData.flatMap(item => item.categories || []))
@@ -1824,6 +1901,7 @@ function renderBacklogView() {
     `;
 }
 
+// Genera un bloque desplegable con las tarjetas de juegos pertenecientes a un estado específico
 function renderStatusSection(statusName, textColorClass, cardBorderClass) {
     const filteredGames = backlogData.filter(game => {
         const matchStatus = (game.status || "").toLowerCase() === statusName.toLowerCase();
@@ -1887,14 +1965,15 @@ function renderStatusSection(statusName, textColorClass, cardBorderClass) {
 
             <div class="collapse show mt-2" id="${sectionId}">
                 ${filteredGames.length > 0
-            ? `<div class="row g-2">${cardsHTML}</div>`
-            : `<p class="text-secondary small fst-italic mb-0" style="font-size: 0.8rem;">No hay elementos en este estado.</p>`
-        }
+                    ? `<div class="row g-2">${cardsHTML}</div>`
+                    : `<p class="text-secondary small fst-italic mb-0" style="font-size: 0.8rem;">No hay elementos en este estado.</p>`
+                }
             </div>
         </div>
     `;
 }
 
+// Filtra los juegos del backlog alternando la selección de una categoría
 function toggleCategoryFilter(category) {
     if (selectedCategories.has(category)) {
         selectedCategories.delete(category);
@@ -1904,13 +1983,17 @@ function toggleCategoryFilter(category) {
     document.getElementById("app-content").innerHTML = renderBacklogView();
 }
 
+// Elimina todos los filtros de categoría activos en la vista de backlog
 function clearCategoryFilters() {
     selectedCategories.clear();
     document.getElementById("app-content").innerHTML = renderBacklogView();
 }
+
 //#endregion
 
 //#region 11. Vista - Configuración y Burnout
+
+// Renderiza la vista de opciones, elementos en burnout y sincronización
 function renderSettingsView() {
     const burnoutItems = backlogData
         .map((item, index) => ({ item, originalIndex: index }))
@@ -1973,7 +2056,7 @@ function renderSettingsView() {
     `;
 }
 
-// Alternar burnout con aviso emergente
+// Alterna el estado de burnout de un juego específico
 function toggleBurnoutItem(index) {
     if (backlogData[index] !== undefined) {
         backlogData[index].burnout = !backlogData[index].burnout;
@@ -1982,23 +2065,27 @@ function toggleBurnoutItem(index) {
         markRemoteDirty();
 
         alert("⚠️ Has cambiado el estado de Burnout.\n\nRecuerda pulsar el botón 'Guardar en remoto' para sincronizar los cambios en GitHub, Jefe.");
-
         navigateTo('settings');
     }
 }
 
+// Guarda la configuración de meta diaria global en los ajustes de la app
 function updateGlobalGamesPerDay(val) {
     appSettings.gamesPerDayValid = Math.max(1, parseInt(val, 10) || 1);
     saveAppSettings();
 }
+
 //#endregion
 
 //#region 12. Funciones Auxiliares y Helpers
+
+// Convierte el primer carácter de una cadena de texto a mayúscula
 function capitalize(str) {
     if (!str) return "";
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// Cambia la apariencia visual del botón de guardado remoto según si hay cambios pendientes
 function updateSaveButtonIndicator() {
     const saveBtn = document.getElementById("btn-save-remote");
     if (!saveBtn) return;
@@ -2011,4 +2098,5 @@ function updateSaveButtonIndicator() {
         saveBtn.className = "btn btn-outline-success fw-bold";
     }
 }
+
 //#endregion
