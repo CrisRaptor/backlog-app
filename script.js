@@ -234,7 +234,7 @@ function setupUnsavedWarning() {
 //#endregion
 
 //#region 5. Navegación y Enrutador SPA
-function navigateTo(viewName) {
+async function navigateTo(viewName) {
     const container = document.getElementById("app-content");
     if (!container) return;
 
@@ -243,7 +243,7 @@ function navigateTo(viewName) {
             container.innerHTML = renderHomeView();
             break;
         case "quests":
-            container.innerHTML = renderQuestsView();
+            container.innerHTML = await renderQuestsView();
             break;
         case "newQuest":
             container.innerHTML = renderNewQuestView();
@@ -355,8 +355,395 @@ function renderHomeView() {
 //#endregion
 
 //#region 7. Vista - Quests y Seguimiento
-function renderQuestsView() {
-    return `<h1 class="h4 mb-2 fw-bold">Quests y Seguimiento</h1><p class="text-secondary small">Visualizador de Quest activa e Historial.</p>`;
+let loadedQuestsList = [];
+let activeViewQuestIndex = null;
+let currentHistoryData = null;
+
+// Enrutador/Cargador principal de la vista de Quests
+async function renderQuestsView() {
+    const container = document.getElementById("app-content");
+
+    // Si aún no hemos cargado las quests o venimos de un refresco
+    if (loadedQuestsList.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                <h2 class="h5 text-light">Cargando Quests desde GitHub...</h2>
+            </div>
+        `;
+        await fetchAllQuests();
+    }
+
+    // Si se está inspeccionando una Quest específica
+    if (activeViewQuestIndex !== null && loadedQuestsList[activeViewQuestIndex]) {
+        return renderQuestDetailView(loadedQuestsList[activeViewQuestIndex]);
+    }
+
+    // De lo contrario, mostrar menú principal (Quest Actual + Lista de Histórico)
+    return renderQuestsMainDashboard();
+}
+
+// Obtener todas las quests desde GitHub API y localStorage
+async function fetchAllQuests() {
+    loadedQuestsList = [];
+
+    try {
+        const response = await fetch(
+            `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/quests`,
+            { headers: { Authorization: `token ${GITHUB_CONFIG.token}` } }
+        );
+
+        if (response.ok) {
+            const files = await response.json();
+            const jsonFiles = files.filter(f => f.name.endsWith(".json"));
+
+            for (const file of jsonFiles) {
+                try {
+                    const res = await fetch(file.download_url);
+                    if (res.ok) {
+                        const qData = await res.json();
+                        loadedQuestsList.push({ fileName: file.name, ...qData });
+                    }
+                } catch (e) {
+                    console.warn("Error leyendo quest remota:", file.name, e);
+                }
+            }
+        }
+    } catch (error) {
+        console.warn("No se pudo conectar con el directorio /quests/ de GitHub:", error);
+    }
+
+    // Fallback/Comprobación con localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith("quests_")) {
+            try {
+                const localQ = JSON.parse(localStorage.getItem(key));
+                const fileName = key.replace("quests_", "");
+                if (!loadedQuestsList.some(q => q.fileName === fileName)) {
+                    loadedQuestsList.push({ fileName, ...localQ });
+                }
+            } catch (e) {}
+        }
+    }
+
+    // Ordenar de más reciente a más antigua
+    loadedQuestsList.sort((a, b) => {
+        const startA = a.date_range?.start || "";
+        const startB = b.date_range?.start || "";
+        return startB.localeCompare(startA);
+    });
+}
+
+// -------------------------------------------------------------
+// VISTA PRINCIPAL: QUEST ACTUAL + HISTÓRICO
+// -------------------------------------------------------------
+function renderQuestsMainDashboard() {
+    const todayStr = new Date().toISOString().split("T")[0];
+
+    // Buscar Quest que cubra el día de hoy
+    const currentQuestIndex = loadedQuestsList.findIndex(q => {
+        if (!q.date_range) return false;
+        return todayStr >= q.date_range.start && todayStr <= q.date_range.end;
+    });
+
+    const currentQuest = currentQuestIndex !== -1 ? loadedQuestsList[currentQuestIndex] : null;
+
+    return `
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h4 fw-bold text-light mb-0">Quests y Seguimiento</h1>
+                <p class="text-secondary small mb-0">Consulta la quest activa o explora el histórico de misiones.</p>
+            </div>
+            <button class="btn btn-sm btn-outline-info" onclick="refreshQuestsList()">
+                🔄 Recargar Quests
+            </button>
+        </div>
+
+        <!-- 1. OPCIÓN 1: QUEST ACTUAL -->
+        <div class="card card-dark p-4 mb-4 border-primary shadow-lg position-relative overflow-hidden">
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-subtle-custom pb-2">
+                <h2 class="h5 fw-bold text-primary mb-0 d-flex align-items-center gap-2">
+                    <span>⚡</span> Quest Actual
+                </h2>
+                ${currentQuest ? '<span class="badge bg-success">Activa Ahora</span>' : '<span class="badge bg-secondary">Sin Quest Activa</span>'}
+            </div>
+
+            ${currentQuest ? `
+                <div class="row align-items-center">
+                    <div class="col-md-8 mb-3 mb-md-0">
+                        <h3 class="h6 text-light fw-bold mb-1">
+                            Rango: ${currentQuest.date_range.start} al ${currentQuest.date_range.end}
+                        </h3>
+                        <p class="text-secondary small mb-2">
+                            Duración: <strong>${currentQuest.settings?.daysCount || currentQuest.days?.length || 0} días</strong> | Meta diaria: <strong>${currentQuest.settings?.gamesPerDayValid || 1} juego(s)</strong>
+                        </p>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${(currentQuest.settings?.selectedCategories || []).map(cat => `
+                                <span class="badge badge-category">${capitalize(cat)}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button class="btn btn-primary fw-bold px-4 w-100 w-md-auto" onclick="openQuestDetail(${currentQuestIndex})">
+                            👁️ Ver Quest Actual
+                        </button>
+                    </div>
+                </div>
+            ` : `
+                <div class="text-center py-3">
+                    <p class="text-secondary mb-3">No hay ninguna quest activa registrada para el día de hoy (${todayStr}).</p>
+                    <button class="btn btn-outline-warning fw-bold" onclick="navigateTo('newQuest')">
+                        🚀 Iniciar una Nueva Quest
+                    </button>
+                </div>
+            `}
+        </div>
+
+        <!-- 2. OPCIÓN 2: HISTÓRICO DE QUESTS -->
+        <div class="card card-dark p-4 border-subtle-custom shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 fw-bold text-light mb-0 d-flex align-items-center gap-2">
+                    <span>📜</span> Histórico de Quests (${loadedQuestsList.length})
+                </h2>
+            </div>
+
+            ${loadedQuestsList.length === 0 ? `
+                <p class="text-secondary fst-italic mb-0">No hay quests guardadas en el historial.</p>
+            ` : `
+                <div class="list-group list-group-flush bg-transparent">
+                    ${loadedQuestsList.map((quest, idx) => `
+                        <div class="list-group-item card-dark border-subtle-custom text-light mb-2 rounded d-flex justify-content-between align-items-center p-3">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <h3 class="h6 fw-bold mb-0 text-light">
+                                        Quest: ${quest.date_range?.start || 'S/F'} al ${quest.date_range?.end || 'S/F'}
+                                    </h3>
+                                    ${idx === currentQuestIndex ? '<span class="badge bg-success ms-2">Actual</span>' : ''}
+                                </div>
+                                <small class="text-secondary">
+                                    Días: ${quest.settings?.daysCount || quest.days?.length || 0} | Meta: ${quest.settings?.gamesPerDayValid || 1} juego(s)/día
+                                </small>
+                            </div>
+                            <button class="btn btn-sm btn-outline-light fw-bold" onclick="openQuestDetail(${idx})">
+                                Ver Juegos ➔
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `}
+        </div>
+    `;
+}
+
+// Recargar datos manualmente
+async function refreshQuestsList() {
+    loadedQuestsList = [];
+    activeViewQuestIndex = null;
+    navigateTo('quests');
+}
+
+function openQuestDetail(index) {
+    activeViewQuestIndex = index;
+    navigateTo('quests');
+}
+
+function closeQuestDetail() {
+    activeViewQuestIndex = null;
+    navigateTo('quests');
+}
+
+// -------------------------------------------------------------
+// DETALLE DE QUEST (READ-ONLY)
+// -------------------------------------------------------------
+function renderQuestDetailView(quest) {
+    return `
+        <!-- CABECERA DE LA QUEST CON BOTÓN EN LA ESQUINA SUPERIOR -->
+        <div class="d-flex justify-content-between align-items-start mb-4 bg-dark p-3 rounded border border-subtle-custom position-relative">
+            <div>
+                <button class="btn btn-sm btn-outline-secondary mb-2" onclick="closeQuestDetail()">
+                    ⬅️ Volver a Quests
+                </button>
+                <h1 class="h4 fw-bold text-light mb-1">
+                    Misión: ${quest.date_range?.start} al ${quest.date_range?.end}
+                </h1>
+                <p class="text-secondary small mb-0">
+                    ID: <code class="text-info">${quest.quest_id || quest.fileName}</code> | Solo lectura
+                </p>
+            </div>
+
+            <!-- BOTÓN EN LA ESQUINA PARA BUSCAR/INSPECCIONAR EL ARCHIVO HISTORY -->
+            <div>
+                <button class="btn btn-warning text-dark fw-bold btn-sm shadow-sm" onclick="inspectQuestHistory('${quest.date_range?.start}')">
+                    📜 Ver Archivos History
+                </button>
+            </div>
+        </div>
+
+        <!-- LISTADO DÍA POR DÍA DE JUEGOS SELECCIONADOS -->
+        <div class="row g-3">
+            ${(quest.days || []).map((dayData, dIdx) => {
+                const selectedTasks = (dayData.tasks || []).filter(t => t.selected);
+                const mandatoryTasks = dayData.mandatoryTasks || [];
+
+                return `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card card-dark h-100 p-3 border-subtle-custom shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-subtle-custom pb-2">
+                                <h2 class="h6 fw-bold text-info mb-0">${dayData.label || `Día ${dIdx + 1}`}</h2>
+                                <span class="badge bg-secondary">${selectedTasks.length} Juego(s)</span>
+                            </div>
+
+                            <!-- Obligatorios -->
+                            ${mandatoryTasks.length > 0 ? `
+                                <div class="mb-2">
+                                    <small class="text-warning fw-bold d-block mb-1" style="font-size: 0.7rem;">⚡ OBLIGATORIOS:</small>
+                                    ${mandatoryTasks.map(m => `
+                                        <div class="p-2 bg-dark-mandatory rounded mb-1 text-light small d-flex justify-content-between">
+                                            <span>${m.name}</span>
+                                            <span class="badge bg-warning text-dark">Obligatorio</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+
+                            <!-- Selección Normal -->
+                            <small class="text-secondary fw-bold d-block mb-1" style="font-size: 0.7rem;">🎮 JUEGOS ELEGIDOS:</small>
+                            ${selectedTasks.length > 0 ? selectedTasks.map(t => `
+                                <div class="p-2 bg-dark border border-secondary rounded mb-1 text-light small d-flex justify-content-between align-items-center opacity-75">
+                                    <span class="fw-bold">${t.name}</span>
+                                    <span class="badge badge-category ms-1">${capitalize(t.slotCategory || t.category || '')}</span>
+                                </div>
+                            `).join('') : '<p class="text-secondary small fst-italic mb-0">Sin selección en este día.</p>'}
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+
+        <!-- MODAL PARA MOSTRAR LOS ARCHIVOS HISTORY E HISTORY FINAL -->
+        <div class="modal fade" id="historyFilesModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content bg-dark text-light border-warning">
+                    <div class="modal-header border-subtle-custom">
+                        <h5 class="modal-title fw-bold text-warning d-flex align-items-center gap-2">
+                            <span>📜</span> Archivos History Vinculados
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="history-modal-content">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-warning" role="status"></div>
+                            <p class="text-secondary mt-2">Buscando archivos de historial en el repositorio...</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-subtle-custom">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// -------------------------------------------------------------
+// BÚSQUEDA Y INSPECCIÓN DE ARCHIVOS HISTORY / HISTORY FINAL
+// -------------------------------------------------------------
+async function inspectQuestHistory(startDateStr) {
+    if (!startDateStr) {
+        alert("No se pudo identificar la fecha de inicio para buscar los archivos de historial, Jefe.");
+        return;
+    }
+
+    const modalEl = new bootstrap.Modal(document.getElementById('historyFilesModal'));
+    modalEl.show();
+
+    const container = document.getElementById("history-modal-content");
+    const initialFileName = `history_${startDateStr}.json`;
+    const finalFileName = `history_${startDateStr}_final.json`;
+
+    let initialData = null;
+    let finalData = null;
+
+    // 1. Intentar obtener history final
+    try {
+        const resFinal = await fetch(
+            `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/history/${finalFileName}`,
+            { headers: { Authorization: `token ${GITHUB_CONFIG.token}` } }
+        );
+        if (resFinal.ok) {
+            const dataFinal = await resFinal.json();
+            finalData = JSON.parse(decodeURIComponent(escape(atob(dataFinal.content))));
+        }
+    } catch (e) {}
+
+    // 2. Intentar obtener history inicial
+    try {
+        const resInit = await fetch(
+            `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/history/${initialFileName}`,
+            { headers: { Authorization: `token ${GITHUB_CONFIG.token}` } }
+        );
+        if (resInit.ok) {
+            const dataInit = await resInit.json();
+            initialData = JSON.parse(decodeURIComponent(escape(atob(dataInit.content))));
+        }
+    } catch (e) {}
+
+    // Fallbacks locales
+    if (!finalData) {
+        const localFinal = localStorage.getItem(`history_history/${finalFileName}`) || localStorage.getItem(`history_${finalFileName}`);
+        if (localFinal) finalData = JSON.parse(localFinal);
+    }
+    if (!initialData) {
+        const localInit = localStorage.getItem(`history_history/${initialFileName}`) || localStorage.getItem(`history_${initialFileName}`);
+        if (localInit) initialData = JSON.parse(localInit);
+    }
+
+    // Renderizar resultados en el modal
+    if (!initialData && !finalData) {
+        container.innerHTML = `
+            <div class="alert alert-danger mb-0">
+                ⚠️ No se encontraron los archivos de historial (<code>${initialFileName}</code> ni <code>${finalFileName}</code>) para esta quest.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <ul class="nav nav-tabs border-subtle-custom mb-3" id="historyTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active text-light fw-bold" id="final-tab" data-bs-toggle="tab" data-bs-target="#tab-history-final" type="button" role="tab">
+                    ✅ History Final (${finalFileName})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link text-light fw-bold" id="initial-tab" data-bs-toggle="tab" data-bs-target="#tab-history-initial" type="button" role="tab">
+                    🎲 History Inicial (${initialFileName})
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="historyTabContent">
+            <!-- TAB HISTORY FINAL -->
+            <div class="tab-pane fade show active" id="tab-history-final" role="tabpanel">
+                ${finalData ? `
+                    <div class="mb-2 small text-secondary">
+                        Estado: <span class="badge bg-success">${finalData.status || 'Accepted'}</span> | 
+                        Fecha de aceptación: <strong>${finalData.accepted_at ? new Date(finalData.accepted_at).toLocaleString() : 'N/A'}</strong>
+                    </div>
+                    <pre class="bg-black text-success p-3 rounded border border-secondary" style="max-height: 350px; overflow-y: auto; font-size: 0.8rem;">${JSON.stringify(finalData, null, 2)}</pre>
+                ` : `<p class="text-secondary fst-italic">Archivo ${finalFileName} no encontrado.</p>`}
+            </div>
+
+            <!-- TAB HISTORY INICIAL -->
+            <div class="tab-pane fade" id="tab-history-initial" role="tabpanel">
+                ${initialData ? `
+                    <div class="mb-2 small text-secondary">Configuración previa de la tirada (Roll):</div>
+                    <pre class="bg-black text-info p-3 rounded border border-secondary" style="max-height: 350px; overflow-y: auto; font-size: 0.8rem;">${JSON.stringify(initialData, null, 2)}</pre>
+                ` : `<p class="text-secondary fst-italic">Archivo ${initialFileName} no encontrado.</p>`}
+            </div>
+        </div>
+    `;
 }
 //#endregion
 
@@ -542,7 +929,15 @@ async function generateQuest() {
 
         // Selección normal por categorías
         newQuestState.selectedCategories.forEach(cat => {
-            const limit = parseInt(dayLimits[cat], 10) || 0;
+            const rawQuota = dayLimits[cat];
+            let limit = 0;
+
+            if (rawQuota === "any") {
+                limit = 999; // Permitir asignar todos los disponibles de la categoría
+            } else {
+                limit = parseInt(rawQuota, 10) || 0;
+            }
+
             if (limit <= 0) return;
 
             const catGames = eligibleGames.filter(g => 
@@ -581,7 +976,8 @@ async function generateQuest() {
         opciones: newQuestState.generatedDays
     };
 
-    const historyFileName = `history-${todayStr}.json`;
+    // Nuevo formato de nombre: history_YYYY-MM-DD.json
+    const historyFileName = `history_${todayStr}.json`;
     await commitJsonFile(`history/${historyFileName}`, initialHistoryPayload, `Crear historial inicial: ${historyFileName}`);
 
     newQuestState.step = 'review';
@@ -767,7 +1163,7 @@ function renderDayTasksList(dayData) {
     return html;
 }
 
-// Bloqueo en la función de activación
+// Permite marcar o desmarcar un juego en un día específico con validación entre días
 function toggleTaskSelection(dayIdx, taskIdx) {
     const day = newQuestState.generatedDays[dayIdx];
     if (!day || !day.tasks[taskIdx]) return;
@@ -776,13 +1172,16 @@ function toggleTaskSelection(dayIdx, taskIdx) {
     const selectedMap = getSelectedGamesMap();
     const selectedOnDay = selectedMap.get(task.name);
 
-    // Impedir seleccionar si ya pertenece a otro día
+    // Impedir seleccionar si ya pertenece a otro día diferente
     if (!task.selected && selectedOnDay !== undefined && selectedOnDay !== (dayIdx + 1)) {
         alert(`El juego "${task.name}" ya ha sido seleccionado en el Día ${selectedOnDay}, Jefe.`);
         return;
     }
 
+    // Cambiar estado seleccionado / desmarcado
     task.selected = !task.selected;
+
+    // Redibujar la vista para refrescar contadores e indicadores visuales
     navigateTo('newQuest');
 }
 
@@ -845,15 +1244,16 @@ async function acceptAndGenerateQuest() {
     const startDateStr = startDate.toISOString().split("T")[0];
     const endDateStr = endDate.toISOString().split("T")[0];
 
-    const questFileName = `quest-${startDateStr}-al-${endDateStr}.json`;
-    const historyFinalFileName = `history-${startDateStr}-final.json`;
+    // Nuevo formato de nombres: quest_YYYY-MM-DD_al_YYYY-MM-DD.json e history_YYYY-MM-DD_final.json
+    const questFileName = `quest_${startDateStr}_al_${endDateStr}.json`;
+    const historyFinalFileName = `history_${startDateStr}_final.json`;
 
     const questPayload = {
         quest_id: `quest_${Date.now()}`,
         date_range: { start: startDateStr, end: endDateStr },
         settings: {
             daysCount: newQuestState.daysCount,
-            gamesPerDayValid: newQuestState.gamesPerDayValid, // <--- Guardado en el JSON final de la quest
+            gamesPerDayValid: newQuestState.gamesPerDayValid,
             useMandatory: newQuestState.useMandatory,
             selectedCategories: newQuestState.selectedCategories
         },
@@ -866,7 +1266,7 @@ async function acceptAndGenerateQuest() {
             useMandatory: newQuestState.useMandatory,
             selectedCategories: newQuestState.selectedCategories,
             dayConfigs: newQuestState.dayConfigs,
-            gamesPerDayValid: newQuestState.gamesPerDayValid // <--- Guardado en el historial final
+            gamesPerDayValid: newQuestState.gamesPerDayValid
         },
         opciones: newQuestState.generatedDays,
         status: "accepted",
@@ -884,21 +1284,25 @@ async function acceptAndGenerateQuest() {
     navigateTo('quests');
 }
 
-// Helper para guardar JSON remoto/local
+// Helper para guardar JSON remoto/local asegurando obtención del SHA previo
 async function commitJsonFile(filePath, payload, commitMessage) {
     const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
 
     try {
         let sha = null;
+        
+        // 1. Consultar si el archivo existe previamente para obtener su SHA
         const checkFile = await fetch(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${filePath}`,
             { headers: { Authorization: `token ${GITHUB_CONFIG.token}` } }
         );
+
         if (checkFile.ok) {
             const fileData = await checkFile.json();
             sha = fileData.sha;
         }
 
+        // 2. Hacer la petición PUT adjuntando el SHA si existe
         const response = await fetch(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${filePath}`,
             {
@@ -943,8 +1347,21 @@ function syncDayConfigs(availableCategories) {
 }
 
 function getDayLabel(index) {
-    const dayName = WEEKDAYS[index % 7];
-    return `Día ${index + 1} (${dayName})`;
+    const today = new Date();
+    
+    // getDay() en JS: 0 = Domingo, 1 = Lunes, 2 = Martes, etc.
+    // Mapeamos para que 0 sea Lunes y 6 sea Domingo:
+    const todayWeekdayIndex = (today.getDay() + 6) % 7; 
+    const currentDayIndex = (todayWeekdayIndex + index) % 7;
+    const dayName = WEEKDAYS[currentDayIndex];
+
+    // Calcula la fecha de cada día relativo (DD/MM)
+    const targetDate = new Date();
+    targetDate.setDate(today.getDate() + index);
+    const dayOfMonth = String(targetDate.getDate()).padStart(2, '0');
+    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+
+    return `Día ${index + 1} (${dayName} ${dayOfMonth}/${month})`;
 }
 
 function updateQuestDays(value) {
@@ -1045,20 +1462,6 @@ function isDayValid(dayData) {
 function areAllDaysValid() {
     if (!newQuestState.generatedDays || newQuestState.generatedDays.length === 0) return false;
     return newQuestState.generatedDays.every(day => isDayValid(day));
-}
-
-// Permite marcar o desmarcar un juego en un día específico
-function toggleTaskSelection(dayIdx, taskIdx) {
-    const day = newQuestState.generatedDays[dayIdx];
-    if (!day || !day.tasks[taskIdx]) return;
-
-    const task = day.tasks[taskIdx];
-    
-    // Cambiar estado seleccionado / desmarcado
-    task.selected = !task.selected;
-
-    // Redibujar la vista para refrescar contadores e indicadores visuales
-    navigateTo('newQuest');
 }
 
 //#endregion
@@ -1362,7 +1765,7 @@ function closeEditForm() {
     document.getElementById("items-name-list").innerHTML = generateEditListHTML();
 }
 
-function saveItemChanges(event) {
+async function saveItemChanges(event) {
     event.preventDefault();
 
     const name = document.getElementById("form-item-name").value.trim();
@@ -1386,6 +1789,9 @@ function saveItemChanges(event) {
 
     hasUnsavedChanges = false;
     closeEditForm();
+
+    // Sincronización automática con GitHub/Local
+    await saveChangesToRemote();
     navigateTo('edit'); // Recargar vista
 }
 
@@ -1397,7 +1803,7 @@ function confirmDeleteItem() {
     deleteModal.show();
 }
 
-function executeDeleteItem() {
+async function executeDeleteItem() {
     if (editingItemIndex !== null) {
         backlogData.splice(editingItemIndex, 1);
         const modalEl = document.getElementById('deleteConfirmModal');
@@ -1406,6 +1812,9 @@ function executeDeleteItem() {
 
         hasUnsavedChanges = false;
         closeEditForm();
+
+        // Sincronización automática con GitHub/Local
+        await saveChangesToRemote();
         navigateTo('edit');
     }
 }
@@ -1537,7 +1946,29 @@ function clearCategoryFilters() {
 
 //#region 11. Vista - Configuración y Burnout
 function renderSettingsView() {
-    return `<h1 class="h4 mb-2 fw-bold">Configuración y Burnout</h1><p class="text-secondary small">Ajuste de parámetros generales.</p>`;
+    return `
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h4 fw-bold text-light mb-0">Configuración y Opciones</h1>
+                <p class="text-secondary small mb-0">Ajusta los parámetros globales de la aplicación y la sincronización.</p>
+            </div>
+        </div>
+
+        <div class="card card-dark p-3 mb-4 border-subtle-custom shadow-sm">
+            <h2 class="h6 fw-bold text-info text-uppercase mb-3">Sincronización Manual</h2>
+            <p class="text-secondary small mb-3">Forzar el guardado del backlog actual directamente en el repositorio de GitHub.</p>
+            <div>
+                <button class="btn btn-primary fw-bold" onclick="saveChangesToRemote()">
+                    ☁️ Sincronizar Backlog con GitHub
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function updateGlobalGamesPerDay(val) {
+    appSettings.gamesPerDayValid = Math.max(1, parseInt(val, 10) || 1);
+    saveAppSettings();
 }
 //#endregion
 
