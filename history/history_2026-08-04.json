@@ -124,13 +124,13 @@
         ],
         "tasks": [
           {
-            "name": "Stardew Valley",
+            "name": "Celeste",
             "slotCategory": "casual",
             "isMandatory": false,
             "categories": [
               "casual",
               "indie",
-              "grindeo"
+              "platino"
             ],
             "selected": false,
             "completed": false
@@ -198,13 +198,13 @@
         ],
         "tasks": [
           {
-            "name": "Hades",
+            "name": "Stardew Valley",
             "slotCategory": "casual",
             "isMandatory": false,
             "categories": [
               "casual",
-              "roguelike",
-              "indie"
+              "indie",
+              "grindeo"
             ],
             "selected": false,
             "completed": false
@@ -223,12 +223,12 @@
             "completed": false
           },
           {
-            "name": "Monster Hunter: World",
+            "name": "Vampire Survivors",
             "slotCategory": "grindeo",
             "isMandatory": false,
             "categories": [
-              "grindeo",
-              "multiplayer"
+              "casual",
+              "grindeo"
             ],
             "selected": false,
             "completed": false
@@ -351,13 +351,13 @@
       ],
       "tasks": [
         {
-          "name": "Stardew Valley",
+          "name": "Celeste",
           "slotCategory": "casual",
           "isMandatory": false,
           "categories": [
             "casual",
             "indie",
-            "grindeo"
+            "platino"
           ],
           "selected": false,
           "completed": false
@@ -425,13 +425,13 @@
       ],
       "tasks": [
         {
-          "name": "Hades",
+          "name": "Stardew Valley",
           "slotCategory": "casual",
           "isMandatory": false,
           "categories": [
             "casual",
-            "roguelike",
-            "indie"
+            "indie",
+            "grindeo"
           ],
           "selected": false,
           "completed": false
@@ -450,12 +450,12 @@
           "completed": false
         },
         {
-          "name": "Monster Hunter: World",
+          "name": "Vampire Survivors",
           "slotCategory": "grindeo",
           "isMandatory": false,
           "categories": [
-            "grindeo",
-            "multiplayer"
+            "casual",
+            "grindeo"
           ],
           "selected": false,
           "completed": false
