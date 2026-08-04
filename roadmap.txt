@@ -19,4 +19,10 @@ NO TENER EN CUENTA DURANTE EL DESARROLLO EXCEPTO MENCIÓN DIRECTA
 
 5. Apartado de Daylist
    - Descripción: Sección con elementos especiales "daily" donde activar o desactivar cada una, estas "daily" se añaden a las quest en un apartado separado
+
+6. Valor y ludificacion
+   - Descripción: añade un valor a superar esos juegos que se almacena localmente
+
+7. Detalle de juego
+   - Descripción: añadir una descripcion
 */
